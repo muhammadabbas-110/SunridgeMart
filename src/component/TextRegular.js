@@ -22,8 +22,8 @@ export default function TextRegular(props) {
                     marginTop: props.marginTop,
                     alignItems: props.alignItems,
                     fontFamily: props.fontFamily ? props.fontFamily : fonts.poppins.regular,
-                    color: props.color ? props.color : 'black'
-
+                    color: props.color ? props.color : 'black',
+                    textAlign: props.textAlign
                 }}
             >{props.text}</Text>
         </View>

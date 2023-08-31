@@ -1540,6 +1540,11 @@
   dependencies:
     deep-assign "^3.0.0"
 
+"@react-native-community/blur@^4.3.0":
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/blur/-/blur-4.3.2.tgz#185a2c7dd03ba168cc95069bc4742e9505fd6c6c"
+  integrity sha512-0ID+pyZKdC4RdgC7HePxUQ6JmsbNrgz03u+6SgqYpmBoK/rE+7JffqIw7IEsfoKitLEcRNLGekIBsfwCqiEkew==
+
 "@react-native-community/cli-clean@^10.1.1":
   version "10.1.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-clean/-/cli-clean-10.1.1.tgz#4c73ce93a63a24d70c0089d4025daac8184ff504"
@@ -6101,10 +6106,22 @@ react-native-confirmation-code-field@6:
   resolved "https://registry.yarnpkg.com/react-native-confirmation-code-field/-/react-native-confirmation-code-field-6.7.0.tgz#81f5e646898addb3243cf89d41d884b0762ae962"
   integrity sha512-dzw1Wh0Lz4myVUSyj7E4u/s5y5Sz5jS4B5w+oRlaeDVnUHer+HQSIzr11ckNBGr+WVCdGIYwxrYcpZ+Dr8ELfA==
 
+react-native-date-picker@^4.2.14:
+  version "4.2.14"
+  resolved "https://registry.yarnpkg.com/react-native-date-picker/-/react-native-date-picker-4.2.14.tgz#ebeb3bf8d682268a4e405decde1e72ab95ecffb7"
+  integrity sha512-rP0ycj3I+8x4pIUGjeh7pL+cMPntKccLGX/OXx790bsIM0Hcyg0ZL86kGnnZu9fEUhXlgdr3OK/jhQue5L6kSQ==
+  dependencies:
+    prop-types "^15.8.1"
+
 react-native-dimension@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/react-native-dimension/-/react-native-dimension-1.0.6.tgz#049e40746160137f5e1dde89983b04ff8dc288d5"
   integrity sha512-QO4YlfpuClxjxsD3+ib9pTDT6nnGfgiG97mGZKwJpfi3DQf13TsrQZLy8I7HjL61XwId8O1R2g1/wKryU0D0Zw==
+
+react-native-dropdown-picker@^5.4.6:
+  version "5.4.6"
+  resolved "https://registry.yarnpkg.com/react-native-dropdown-picker/-/react-native-dropdown-picker-5.4.6.tgz#3736fc468de4a295e4df8d1f65ed2eadaf9b445f"
+  integrity sha512-T1XBHbE++M6aRU3wFYw3MvcOuabhWZ29RK/Ivdls2r1ZkZ62iEBZknLUPeVLMX3x6iUxj4Zgr3X2DGlEGXeHsA==
 
 react-native-fast-image@^8.6.3:
   version "8.6.3"

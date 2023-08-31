@@ -25,7 +25,7 @@ import Facebookimg from '../../Assest/Images/facebook.png';
 import googleicon from '../../Assest/Images/google.png';
 import TextMedium from '../../component/TextMedium';
 
-export default function LoginScreen() {
+export default function LoginScreen(props) {
   const [email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
   const [checked, setChecked] = useState(false);
@@ -33,7 +33,7 @@ export default function LoginScreen() {
   return (
     <ImageBackground source={background} style={styles.container}>
       <View style={styles.containerback}>
-        <BackButton />
+        <BackButton  onPress={() => props.navigation.goBack()} />
       </View>
       <SafeAreaView style={styles.containersafearea}>
         <ScrollView
@@ -71,7 +71,11 @@ export default function LoginScreen() {
                 />
                 <TextRegular fontSize={14} text={'Remember me'} />
               </View>
-              <TouchableOpacity style={{marginRight: width(4)}}>
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate('ForgotPasswordSelector');
+                }}
+                style={{marginRight: width(4)}}>
                 <TextRegular
                   fontSize={14}
                   color={'#FF2A00'}
@@ -104,7 +108,8 @@ export default function LoginScreen() {
                   color={'#707070'}
                   text={'Do you have an account ?'}
                 />
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate('Signupscreen')}>
                   <TextMedium
                     fontSize={12}
                     color={'#FF2A00'}
