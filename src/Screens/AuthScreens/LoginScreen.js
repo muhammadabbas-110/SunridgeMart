@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   StyleSheet,
   Image,
@@ -24,16 +24,37 @@ import fonts from '../../Assest/Fonts';
 import Facebookimg from '../../Assest/Images/facebook.png';
 import googleicon from '../../Assest/Images/google.png';
 import TextMedium from '../../component/TextMedium';
+import AsyncStorage from '@react-native-community/async-storage';
+import { AppContext } from '../../context';
 
 export default function LoginScreen(props) {
   const [email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
   const [checked, setChecked] = useState(false);
+  const { setUser } = useContext(AppContext); // Access setUser from the context
 
+  const handleLogin = async (username, password) => {
+    console.log('Logging in with username:', username, 'and password:', password);
+    if (username === 'admin' && password === '123') {
+      const userData = { username: 'admin' };
+      await AsyncStorage.setItem('isUser', JSON.stringify(userData));
+      setUser(userData);
+    } else {
+      alert('Invalid username or password');
+    }
+  }
+
+  const submitdata = () => {
+    if (email && Password) {
+      handleLogin(email, Password); // Call handleLogin with the entered email and password
+    } else {
+      alert('Please enter your fields');
+    }
+  };
   return (
     <ImageBackground source={background} style={styles.container}>
       <View style={styles.containerback}>
-        <BackButton  onPress={() => props.navigation.goBack()} />
+        <BackButton onPress={() => props.navigation.goBack()} />
       </View>
       <SafeAreaView style={styles.containersafearea}>
         <ScrollView
@@ -84,7 +105,12 @@ export default function LoginScreen(props) {
               </TouchableOpacity>
             </View>
             <View style={{alignItems: 'center'}}>
-              <CustomButton text={'SIGN IN'} />
+              <CustomButton
+                onPress={() => {
+                  submitdata();
+                }}
+                text={'SIGN IN'}
+              />
             </View>
             <View style={styles.viewww}>
               <View style={styles.verticalline} />

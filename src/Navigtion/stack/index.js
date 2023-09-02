@@ -54,11 +54,15 @@ const RootNavigation = () => {
 
   const renderStack = () => {
     if (user) {
-      return <AppStack onLogout={handleLogout} />;
+      return (
+          <AppStack onLogout={handleLogout} />
+      );
     } else {
-      return <AuthStack onLogin={handleLogin} />;
+      return (
+          <AuthStack onLogin={handleLogin} />
+      );
+      }
     }
-  };
 
   return renderStack();
 };

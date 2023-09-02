@@ -23,7 +23,8 @@ export default function TextBold(props) {
                     alignItems: props.alignItems,
                     fontFamily: props.fontFamily ? props.fontFamily : fonts.poppins.bold,
                     color: props.color ? props.color : 'black',
-                    textAlign:props.textAlign
+                    textAlign:props.textAlign,
+                    lineHeight:props.lineHeight,
 
                 }}
             >{props.text}</Text>
