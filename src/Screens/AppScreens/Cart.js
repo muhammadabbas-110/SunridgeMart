@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import CustomTextinput from '../../component/CustomTextinput';
 import searchicon from '../../Assest/Images/magnifying-glass.png';
-import {height, width} from 'react-native-dimension';
+import { height, width } from 'react-native-dimension';
 import BackButton from '../../component/BackButton';
 import TextMedium from '../../component/TextMedium';
 import atta from '../../Assest/Images/Atta-Fortified-removebg-preview.png';
@@ -21,8 +21,13 @@ import sub from '../../Assest/Images/sub.png';
 import cookingoil from '../../Assest/Images/oil-Cookioil-box-removebg-preview.png';
 import basmati from '../../Assest/Images/premium-basmati-rice-1kg-removebg-preview.png';
 import maida from '../../Assest/Images/maida-1kg-removebg-preview.png';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import CustomButton from '../../component/CustomButton';
+import TextRegular from '../../component/TextRegular';
 
 export default function Cart(props) {
+  const refRBSheet = useRef();
+
   const [itemCounts, setItemCounts] = useState({
     1: 0,
     2: 0,
@@ -30,20 +35,27 @@ export default function Cart(props) {
     4: 0,
   });
 
-  const incrementCount = itemId => {
-    setItemCounts(prevCounts => ({
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const incrementCount = (itemId) => {
+    setItemCounts((prevCounts) => ({
       ...prevCounts,
       [itemId]: prevCounts[itemId] + 1,
     }));
   };
 
-  const decrementCount = itemId => {
+  const decrementCount = (itemId) => {
     if (itemCounts[itemId] > 0) {
-      setItemCounts(prevCounts => ({
+      setItemCounts((prevCounts) => ({
         ...prevCounts,
         [itemId]: prevCounts[itemId] - 1,
       }));
     }
+  };
+
+  const openBottomSheet = (item) => {
+    setSelectedItem(item);
+    refRBSheet.current.open();
   };
 
   const data = [
@@ -73,40 +85,43 @@ export default function Cart(props) {
     },
   ];
 
-  const renderItem = ({item}) => (
-    <View style={styles.cartcontainer}>
-      <View style={styles.firstsection}>
-        <View style={styles.itemimagecontainer}>
-          <Image source={item.image} style={styles.itemimage} />
+  const renderItem = ({ item }) => {
+    const itemCount = itemCounts[item.id];
+    return (
+      <View style={styles.cartcontainer}>
+        <View style={styles.firstsection}>
+          <View style={styles.itemimagecontainer}>
+            <Image source={item.image} style={styles.itemimage} />
+          </View>
+          <View style={styles.textview}>
+            <TextMedium color={'#333333'} fontSize={15} text={item.name} />
+            <View style={{ height: 7 }} />
+            <TextBold color={'#FF2A00'} fontSize={18} text={item.price} />
+          </View>
         </View>
-        <View style={styles.textview}>
-          <TextMedium color={'#333333'} fontSize={15} text={item.name} />
-          <View style={{height: 7}} />
-          <TextBold color={'#FF2A00'} fontSize={18} text={item.price} />
+        <View style={styles.secoundsection}>
+          <TouchableOpacity
+            onPress={() => openBottomSheet(item)}
+            style={styles.deletconatiner}>
+            <Image source={deleteicon} style={styles.delicon} />
+          </TouchableOpacity>
+          <View style={styles.countercontainer}>
+            <TouchableOpacity
+              onPress={() => decrementCount(item.id)}
+              style={styles.innerspacecounter}>
+              <Image source={sub} style={styles.imgcounter} />
+            </TouchableOpacity>
+            <Text style={styles.count}>{itemCount}</Text>
+            <TouchableOpacity
+              onPress={() => incrementCount(item.id)}
+              style={styles.innerspacecounter}>
+              <Image source={add} style={styles.imgcounter} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-      <View style={styles.secoundsection}>
-        <TouchableOpacity
-          onPress={() => decrementCount(item.id)}
-          style={styles.deletconatiner}>
-          <Image source={deleteicon} style={styles.delicon} />
-        </TouchableOpacity>
-        <View style={styles.countercontainer}>
-          <TouchableOpacity
-            onPress={() => decrementCount(item.id)}
-            style={styles.innerspacecounter}>
-            <Image source={sub} style={styles.imgcounter} />
-          </TouchableOpacity>
-          <Text style={styles.count}>{itemCounts[item.id]}</Text>
-          <TouchableOpacity
-            onPress={() => incrementCount(item.id)}
-            style={styles.innerspacecounter}>
-            <Image source={add} style={styles.imgcounter} />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -120,9 +135,105 @@ export default function Cart(props) {
       <FlatList
         showsVerticalScrollIndicator={false}
         data={data}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
       />
+      <View style={styles.footarsection}>
+        <View>
+          <TextRegular fontSize={12} color={'#666666'} text={'Total Price'} />
+          <TextMedium fontSize={16} color={'#FF2A00'} text={'PKR 280'} />
+        </View>
+
+        <CustomButton
+          onPress={() => {
+            props.navigation.navigate('CheckOut');
+          }}
+          text={'CHECKOUT'}
+        />
+      </View>
+      <RBSheet
+        ref={refRBSheet}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        customStyles={{
+          wrapper: {
+            backgroundColor: 'transparent',
+          },
+          draggableIcon: {
+            backgroundColor: '#666666',
+          },
+        }}>
+        <View style={styles.sheetcontainer}>
+          {selectedItem && (
+            <>
+              <TextBold
+                alignSelf={'center'}
+                fontSize={18}
+                color={'#666666'}
+                text={'Remove From Cart? '}
+              />
+              <View style={styles.verticallinesheet} />
+              <View style={styles.cartcontainer}>
+                <View style={styles.firstsection}>
+                  <View style={styles.itemimagecontainer}>
+                    <Image
+                      source={selectedItem.image}
+                      style={styles.itemimage}
+                    />
+                  </View>
+                  <View style={styles.textview}>
+                    <TextMedium
+                      color={'#333333'}
+                      fontSize={15}
+                      text={selectedItem.name}
+                    />
+                    <View style={{ height: 7 }} />
+                    <TextBold
+                      color={'#FF2A00'}
+                      fontSize={18}
+                      text={selectedItem.price}
+                    />
+                  </View>
+                </View>
+                <View style={styles.secoundsection}>
+                  <TouchableOpacity
+                    onPress={() => refRBSheet.current.close()}
+                    style={styles.deletconatiner}>
+                    <Image source={deleteicon} style={styles.delicon} />
+                  </TouchableOpacity>
+                  <View style={styles.countercontainer}>
+                    <TouchableOpacity
+                      onPress={() => decrementCount(selectedItem.id)}
+                      style={styles.innerspacecounter}>
+                      <Image source={sub} style={styles.imgcounter} />
+                    </TouchableOpacity>
+                    <Text style={styles.count}>
+                      {itemCounts[selectedItem.id]}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => incrementCount(selectedItem.id)}
+                      style={styles.innerspacecounter}>
+                      <Image source={add} style={styles.imgcounter} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </>
+          )}
+          <View style={styles.sheetbuttonscontainer}>
+            <TouchableOpacity style={styles.transbtn}>
+              <TextMedium fontSize={14} color={'#666666'} text={'CANCEL'} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.colorbtn}>
+              <TextMedium
+                fontSize={14}
+                color={'#ffff'}
+                text={'Yes, remove'}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </RBSheet>
     </SafeAreaView>
   );
 }
@@ -210,5 +321,43 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20,
     resizeMode: 'contain',
+  },
+  footarsection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: width(3),
+    marginVertical: width(3),
+  },
+  sheetbuttonscontainer: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  transbtn: {
+    borderColor: '#666666',
+    padding: 9,
+    borderWidth: 1,
+    borderRadius: 10,
+    width: width(40),
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  colorbtn: {
+    backgroundColor: '#FF2A00',
+    padding: 10,
+    borderRadius: 10,
+    width: width(40),
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  verticallinesheet: {
+    borderBottomWidth: 1,
+    borderColor: '#666666',
+    marginVertical: width(2),
+  },
+  sheetcontainer: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
   },
 });
