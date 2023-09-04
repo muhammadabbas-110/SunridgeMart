@@ -29,7 +29,7 @@ import wheart from '../../Assest/Images/whiteheart.png';
 import star from '../../Assest/Images/star-social-favorite-middle-full.png';
 const deviceWidth = Dimensions.get('window').width;
 
-export default function HomeScreen() {
+export default function HomeScreen(props) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const data = [
@@ -165,7 +165,7 @@ export default function HomeScreen() {
   };
   const Itemlist = ({item}) => {
     return (
-      <TouchableOpacity style={styles.itemcontainer}>
+      <TouchableOpacity onPress={()=>{props.navigation.navigate("ProductDetail")}} style={styles.itemcontainer}>
         <TouchableOpacity style={styles.itemimageview}>
           <Image source={wheart} style={styles.itemimgheart} />
         </TouchableOpacity>

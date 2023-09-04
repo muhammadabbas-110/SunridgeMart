@@ -1,6 +1,8 @@
 import React from 'react';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import HomeScreen from '../../../Screens/AppScreens/HomeScreen';
+import myTab from '../../../Screens/BottomTab.js';
+import ProductDetail from '../../../Screens/AppScreens/ProductDetail';
 
 const Stack = createStackNavigator();
 
@@ -8,8 +10,16 @@ export default function AppStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="HomeScreen"
-        component={HomeScreen}
+        name="Dashboard"
+        component={myTab}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+         <Stack.Screen
+        name="ProductDetail"
+        component={ProductDetail}
         options={{
           headerShown: false,
           ...TransitionPresets.SlideFromRightIOS,

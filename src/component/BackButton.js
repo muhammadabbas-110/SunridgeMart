@@ -7,7 +7,7 @@ import backimg from '../Assest/Images/back.png'
 export default function BackButton(props) {
   return (
     <View style={{flexDirection: 'row',alignItems:"center"}}>
-        <TouchableOpacity onPress={props.onPress}>
+        <TouchableOpacity onPress={props.onPress} style={props.style}>
           <Image source={backimg} style={{resizeMode:'contain',height:height(2),width:width(5)}}/>
         </TouchableOpacity>
         <TextMedium marginHorizontal={20} text={props.heading}/>

@@ -40,8 +40,8 @@ export default function CustomSlider(props) {
     data={props.data}
     activeSlideAlignment={"start"}
     renderItem={CarouselCardItem}
-    sliderWidth={vw}
-    itemWidth={vw}
+    sliderWidth={vw * 100}
+    itemWidth={vw * 100}
     activeDotIndex={props.activeDotIndex}
     onSnapToItem={props.onSnapToItem}
     useScrollView={true}
