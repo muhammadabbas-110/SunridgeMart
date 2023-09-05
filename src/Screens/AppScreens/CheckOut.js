@@ -96,7 +96,7 @@ export default function CheckOut(props) {
                 />
               </View>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => props.navigation.navigate("ShippingAddress")}>
               <Image source={edit} style={styles.editicon} />
             </TouchableOpacity>
           </View>
@@ -113,7 +113,11 @@ export default function CheckOut(props) {
             color={'#333333'}
             text={'Choose Shipping'}
           />
-          <TouchableOpacity style={styles.touchablebtnpromocode}>
+          <TouchableOpacity
+            onPress={() => {
+              props.navigation.navigate('ShippingType');
+            }}
+            style={styles.touchablebtnpromocode}>
             <View style={styles.rowdataa}>
               <Image source={car} style={styles.carimg} />
               <TextMedium marginHorizontal={5} text={'Choose Shipping Type '} />
@@ -151,7 +155,12 @@ export default function CheckOut(props) {
             <TextMedium color={'#333333'} fontSize={15} text={'1500 PKR'} />
           </View>
           <View style={{alignItems: 'center'}}>
-            <CustomButton text={'Continue to payment'} />
+            <CustomButton
+              onPress={() => {
+                props.navigation.navigate('');
+              }}
+              text={'Continue to payment'}
+            />
           </View>
         </View>
       </ScrollView>

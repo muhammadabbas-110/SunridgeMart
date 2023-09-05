@@ -4,6 +4,9 @@ import HomeScreen from '../../../Screens/AppScreens/HomeScreen';
 import myTab from '../../../Screens/BottomTab.js';
 import ProductDetail from '../../../Screens/AppScreens/ProductDetail';
 import CheckOut from '../../../Screens/AppScreens/CheckOut';
+import ShippingType from '../../../Screens/AppScreens/ShippingType';
+import ShippingAddress from '../../../Screens/AppScreens/ShippingAddress';
+import AddNewAddress from '../../../Screens/AppScreens/AddNewAddress';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +32,30 @@ export default function AppStack() {
        <Stack.Screen
         name="CheckOut"
         component={CheckOut}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+        <Stack.Screen
+        name="ShippingType"
+        component={ShippingType}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+       <Stack.Screen
+        name="ShippingAddress"
+        component={ShippingAddress}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="AddNewAddress"
+        component={AddNewAddress}
         options={{
           headerShown: false,
           ...TransitionPresets.SlideFromRightIOS,
