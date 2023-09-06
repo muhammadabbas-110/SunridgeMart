@@ -7,6 +7,8 @@ import CheckOut from '../../../Screens/AppScreens/CheckOut';
 import ShippingType from '../../../Screens/AppScreens/ShippingType';
 import ShippingAddress from '../../../Screens/AppScreens/ShippingAddress';
 import AddNewAddress from '../../../Screens/AppScreens/AddNewAddress';
+import AddPromo from '../../../Screens/AppScreens/AddPromo';
+import PaymentMethod from '../../../Screens/AppScreens/PaymentMethod';
 
 const Stack = createStackNavigator();
 
@@ -14,7 +16,7 @@ export default function AppStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Dashboard"
+        name="myTab"
         component={myTab}
         options={{
           headerShown: false,
@@ -56,6 +58,22 @@ export default function AppStack() {
       <Stack.Screen
         name="AddNewAddress"
         component={AddNewAddress}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+       <Stack.Screen
+        name="AddPromo"
+        component={AddPromo}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="PaymentMethod"
+        component={PaymentMethod}
         options={{
           headerShown: false,
           ...TransitionPresets.SlideFromRightIOS,

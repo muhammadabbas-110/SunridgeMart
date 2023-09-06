@@ -135,7 +135,7 @@ export default function CheckOut(props) {
                 placeholder={'Enter Promo Code'}
               />
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>{props.navigation.navigate("AddPromo")}}>
               <Image source={plus} style={styles.standardicon} />
             </TouchableOpacity>
           </View>
@@ -157,7 +157,7 @@ export default function CheckOut(props) {
           <View style={{alignItems: 'center'}}>
             <CustomButton
               onPress={() => {
-                props.navigation.navigate('');
+                props.navigation.navigate('PaymentMethod');
               }}
               text={'Continue to payment'}
             />

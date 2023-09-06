@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SunridgeMart</string>
+      <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCV1TD4IiQ0XoH6t6NwI9b-vudoLWhwsEU</string>
 </resources>
