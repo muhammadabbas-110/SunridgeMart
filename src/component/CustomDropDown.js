@@ -17,7 +17,7 @@ export default function CustomDropDown(props) {
         elevation: 5,
         zIndex: 100,
       }}
-      placeholderStyle={{color: '#000', fontSize: 14,left:width(6)}}
+      placeholderStyle={{color: '#000',opacity:0.5, fontSize: 14,left:width(6)}}
       selectedItemContainerStyle={{backgroundColor:"#e5e5e5"}}
       open={Opendropdown}
       value={props.value}

@@ -9,6 +9,9 @@ import ShippingAddress from '../../../Screens/AppScreens/ShippingAddress';
 import AddNewAddress from '../../../Screens/AppScreens/AddNewAddress';
 import AddPromo from '../../../Screens/AppScreens/AddPromo';
 import PaymentMethod from '../../../Screens/AppScreens/PaymentMethod';
+import EditProfile from '../../../Screens/AppScreens/EditProfile';
+import PrivacyPolicy from '../../../Screens/AppScreens/PrivacyPolicy';
+import HelpCenter from '../../../Screens/AppScreens/HelpCenter';
 
 const Stack = createStackNavigator();
 
@@ -23,7 +26,7 @@ export default function AppStack() {
           ...TransitionPresets.SlideFromRightIOS,
         }}
       />
-         <Stack.Screen
+      <Stack.Screen
         name="ProductDetail"
         component={ProductDetail}
         options={{
@@ -31,7 +34,7 @@ export default function AppStack() {
           ...TransitionPresets.SlideFromRightIOS,
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="CheckOut"
         component={CheckOut}
         options={{
@@ -39,7 +42,7 @@ export default function AppStack() {
           ...TransitionPresets.SlideFromRightIOS,
         }}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="ShippingType"
         component={ShippingType}
         options={{
@@ -47,7 +50,7 @@ export default function AppStack() {
           ...TransitionPresets.SlideFromRightIOS,
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="ShippingAddress"
         component={ShippingAddress}
         options={{
@@ -63,7 +66,7 @@ export default function AppStack() {
           ...TransitionPresets.SlideFromRightIOS,
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="AddPromo"
         component={AddPromo}
         options={{
@@ -74,6 +77,30 @@ export default function AppStack() {
       <Stack.Screen
         name="PaymentMethod"
         component={PaymentMethod}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfile}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="PrivacyPolicy"
+        component={PrivacyPolicy}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+         <Stack.Screen
+        name="HelpCenter"
+        component={HelpCenter}
         options={{
           headerShown: false,
           ...TransitionPresets.SlideFromRightIOS,

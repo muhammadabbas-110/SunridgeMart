@@ -170,7 +170,7 @@ export default function Cart(props) {
                 alignSelf={'center'}
                 fontSize={18}
                 color={'#666666'}
-                text={'Remove From Cart? '}
+                text={'Leave A Review'}
               />
               <View style={styles.verticallinesheet} />
               <View style={styles.cartcontainer}>

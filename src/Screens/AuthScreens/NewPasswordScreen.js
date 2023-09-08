@@ -70,6 +70,8 @@ export default function NewPasswordScreen(props) {
         </View>
       </ScrollView>
       <CustomAlert
+        alertheading={"Congratulations"}
+        textmessage={'Your Account Is Ready To Use. You Will Be Redirect To The Home Page In A Few Seconds.!!'}
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(!modalVisible);

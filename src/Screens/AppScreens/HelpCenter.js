@@ -2,18 +2,18 @@ import { View, SafeAreaView,StyleSheet } from 'react-native'
 import React from 'react'
 import BackButton from '../../component/BackButton'
 import {height, width} from 'react-native-dimension';
-import MyOrderTab from './MyOrderTab';
+import HelpCenterTabs from './HelpCenterTabs';
 
-export default function History() {
+export default function HelpCenter(props) {
   return (
     <SafeAreaView style={styles.container}>
     <View style={styles.searchengine}>
       <BackButton 
         onPress={() => props.navigation.goBack()}
-        heading={'My Order'}
+        heading={'Help Center'}
       />
     </View>
-    <MyOrderTab/>
+    <HelpCenterTabs/>
     </SafeAreaView>
   )
 }

@@ -34,16 +34,18 @@ export default function CustomAlert(props) {
               <TextMedium
                 color={'#333333'}
                 fontSize={20}
-                text={'Congratulations!'}
+                // text={'Congratulations!'}
+                text={props.alertheading}
               />
               <View style={{width: width(70)}}>
                 <TextRegular
                   textAlign={'center'}
                   color={'#333333'}
                   fontSize={16}
-                  text={
-                    'Your Account Is Ready To Use. You Will Be Redirect To The Home Page In A Few Seconds.!!'
-                  }
+                  // text={
+                  //   'Your Account Is Ready To Use. You Will Be Redirect To The Home Page In A Few Seconds.!!'
+                  // }
+                  text={props.textmessage}
                 />
                 <Lottie
                   source={loaderjson}
