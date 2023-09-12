@@ -13,7 +13,7 @@ export default function Splash(props) {
     <ImageBackground source={background} style={styles.container}>
       <Animatable.View
         animation="zoomInUp"
-        useNativeDriver="true"
+        useNativeDriver={true}
         duration={2000}
         delay={1000}>
         <Image source={logo} resizeMode="contain" style={styles.img} />

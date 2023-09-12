@@ -22,12 +22,13 @@ import logout from '../../Assest/Images/logout.png';
 import TextMedium from '../../component/TextMedium';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import TextBold from '../../component/TextBold';
+import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 import { AppContext } from '../../context';
+import { setLogOut,setUser } from '../../redux/slices/authReducer';
 
 export default function Profile(props) {
-  const { setUser } = useContext(AppContext); 
-
+const dispatch=useDispatch();
   const refRBSheet = useRef();
   const showBottomSheet = () => {
     refRBSheet.current.open();
@@ -88,8 +89,8 @@ export default function Profile(props) {
   };
   const Handlelogout = async () => {
       await AsyncStorage.removeItem('isUser');
-      setUser(null);
-   
+      dispatch(setUser(null));
+   dispatch(setLogOut(null));
   }
   return (
     <ImageBackground source={background} style={styles.container}>

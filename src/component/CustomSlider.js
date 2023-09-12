@@ -7,6 +7,7 @@ import {
   import {height, width} from 'react-native-dimension';
   import Carousel, {Pagination} from 'react-native-snap-carousel';
   import {vh, vw} from '../constant';
+  import FastImage from 'react-native-fast-image';
 
 export default function CustomSlider(props) {
     const ref = useRef();

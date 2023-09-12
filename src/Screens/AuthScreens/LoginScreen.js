@@ -19,20 +19,22 @@ import emailicon from '../../Assest/Images/email.png';
 import CustomTextinput from '../../component/CustomTextinput';
 import CheckBox from '@react-native-community/checkbox';
 import TextRegular from '../../component/TextRegular';
+import { useDispatch, useSelector } from 'react-redux';
 import CustomButton from '../../component/CustomButton';
 import fonts from '../../Assest/Fonts';
 import Facebookimg from '../../Assest/Images/facebook.png';
 import googleicon from '../../Assest/Images/google.png';
 import TextMedium from '../../component/TextMedium';
 import AsyncStorage from '@react-native-community/async-storage';
+import { authUser,logIn,setUser} from '../../redux/slices/authReducer';
 import {AppContext} from '../../context';
 
 export default function LoginScreen(props) {
   const [email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
   const [checked, setChecked] = useState(false);
-  const {setUser} = useContext(AppContext); // Access setUser from the context
-
+  //const {setUser} = useContext(AppContext); // Access setUser from the context
+const dispatch=useDispatch();
   const handleLogin = async (username, password) => {
     console.log(
       'Logging in with username:',
@@ -43,7 +45,9 @@ export default function LoginScreen(props) {
     if (username === 'admin' && password === '123') {
       const userData = {username: 'admin'};
       await AsyncStorage.setItem('isUser', JSON.stringify(userData));
-      setUser(userData);
+ 
+     dispatch(setUser(userData));
+     dispatch(logIn(userData));
     } else {
       alert('Invalid username or password');
     }

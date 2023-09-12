@@ -5,20 +5,27 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {AppContext} from '../../context';
 import AppStack from './AppStack';
 import AuthStack from './AuthStack/AuthStack';
+import { useDispatch, useSelector } from 'react-redux';
+import { authUser,setUser,authSelector,logIn,setLogOut} from '../../redux/slices/authReducer';
+
 
 const RootNavigation = () => {
   const Stack = createStackNavigator();
-
-  const context = useContext(AppContext);
-  const {user, setUser} = context;
+  const user = useSelector(authUser);
+  const isLoggedIn=useSelector(authSelector).isLoggedIn;
+  const dispatch=useDispatch();
 
   const [isLoading, setIsLoading] = useState(true);
 
   const getUserDetails = async () => {
     try {
       const userData = await AsyncStorage.getItem('isUser');
+      console.log('setUser',user);
       if (userData != null) {
-        setUser(JSON.parse(userData));
+        dispatch(setUser(JSON.parse(userData)))
+        dispatch(logIn(JSON.parse(userData)))
+     
+     
       }
     } catch (error) {
       console.error('Error retrieving user data:', error);
@@ -29,6 +36,7 @@ const RootNavigation = () => {
 
   useEffect(() => {
     getUserDetails();
+
   }, []);
 
   if (isLoading) {
@@ -43,17 +51,20 @@ const RootNavigation = () => {
     if (username === 'admin' && password === 123) {
       const userData = {username: 'admin'};
       await AsyncStorage.setItem('isUser', JSON.stringify(userData));
-      setUser(userData);
+      dispatch(setUser(userData));
+      dispatch(logIn(userData))
+
     }
   };
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('isUser');
-    setUser(null);
+    dispatch(setUser(null));
+    dispatch(setLogOut(null));
   };
 
   const renderStack = () => {
-    if (user) {
+    if (isLoggedIn) {
       return (
           <AppStack onLogout={handleLogout} />
       );

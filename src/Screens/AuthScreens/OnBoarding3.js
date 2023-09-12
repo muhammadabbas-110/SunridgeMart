@@ -25,7 +25,7 @@ import {
           <View style={styles.bottomView}>
             <Animatable.View
               animation="fadeInRight"
-              useNativeDriver="true"
+              useNativeDriver={true}
               duration={1000}
               delay={1000}>
               <TextBold
