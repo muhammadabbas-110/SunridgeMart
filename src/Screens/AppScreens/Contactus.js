@@ -13,7 +13,7 @@ import customercare from '../../Assest/Images/customer-care.png';
 import {height, width} from 'react-native-dimension';
 import TextMedium from '../../component/TextMedium';
 
-export default function Contactus() {
+export default function Contactus(props) {
   const Data = [
     {
       id: 1,
@@ -35,7 +35,7 @@ export default function Contactus() {
     const handleItemPress = () => {
       switch (item.name) {
         case 'Customer Service':
-          Alert.alert('Customer Service');
+         props.navigation.navigate("AdminChat")
           break;
         case 'WhatsApp':
           Alert.alert('WhatsApp');

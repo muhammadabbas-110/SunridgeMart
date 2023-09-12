@@ -17,7 +17,7 @@ import TextBold from '../../component/TextBold';
 import lock from '../../Assest/Images/padlock.png';
 import emailicon from '../../Assest/Images/email.png';
 import CustomTextinput from '../../component/CustomTextinput';
-import {Checkbox} from 'react-native-paper';
+import CheckBox from '@react-native-community/checkbox';
 import TextRegular from '../../component/TextRegular';
 import CustomButton from '../../component/CustomButton';
 import fonts from '../../Assest/Fonts';
@@ -25,28 +25,33 @@ import Facebookimg from '../../Assest/Images/facebook.png';
 import googleicon from '../../Assest/Images/google.png';
 import TextMedium from '../../component/TextMedium';
 import AsyncStorage from '@react-native-community/async-storage';
-import { AppContext } from '../../context';
+import {AppContext} from '../../context';
 
 export default function LoginScreen(props) {
   const [email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
   const [checked, setChecked] = useState(false);
-  const { setUser } = useContext(AppContext); // Access setUser from the context
+  const {setUser} = useContext(AppContext); // Access setUser from the context
 
   const handleLogin = async (username, password) => {
-    console.log('Logging in with username:', username, 'and password:', password);
+    console.log(
+      'Logging in with username:',
+      username,
+      'and password:',
+      password,
+    );
     if (username === 'admin' && password === '123') {
-      const userData = { username: 'admin' };
+      const userData = {username: 'admin'};
       await AsyncStorage.setItem('isUser', JSON.stringify(userData));
       setUser(userData);
     } else {
       alert('Invalid username or password');
     }
-  }
+  };
 
   const submitdata = () => {
     if (email && Password) {
-      handleLogin(email, Password); // Call handleLogin with the entered email and password
+      handleLogin(email, Password);
     } else {
       alert('Please enter your fields');
     }
@@ -84,10 +89,12 @@ export default function LoginScreen(props) {
             />
             <View style={styles.View2}>
               <View style={styles.rowcheck}>
-                <Checkbox
-                  status={checked ? 'checked' : 'unchecked'}
-                  onPress={() => {
-                    setChecked(!checked);
+                <CheckBox
+                  disabled={false}
+                  value={checked}
+                  onCheckColor="#ffffff"
+                  onValueChange={val => {
+                    setChecked(val);
                   }}
                 />
                 <TextRegular fontSize={14} text={'Remember me'} />

@@ -1,14 +1,12 @@
 import {
   View,
   Image,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ImageBackground,
   FlatList,
-  Alert,
 } from 'react-native';
-import React from 'react';
+import React, {useState, useRef,useContext} from 'react';
 import BackButton from '../../component/BackButton';
 import {height, width} from 'react-native-dimension';
 import arrow from '../../Assest/Images/down-arrow.png';
@@ -22,8 +20,22 @@ import shield from '../../Assest/Images/shield.png';
 import helpdesk from '../../Assest/Images/help-desk.png';
 import logout from '../../Assest/Images/logout.png';
 import TextMedium from '../../component/TextMedium';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import TextBold from '../../component/TextBold';
+import AsyncStorage from '@react-native-community/async-storage';
+import { AppContext } from '../../context';
 
 export default function Profile(props) {
+  const { setUser } = useContext(AppContext); 
+
+  const refRBSheet = useRef();
+  const showBottomSheet = () => {
+    refRBSheet.current.open();
+  };
+
+  const hideBottomSheet = () => {
+    refRBSheet.current.close();
+  };
   const data = [
     {id: 1, text: 'Edit Profile', icon: user},
     {id: 2, text: 'Address', icon: address},
@@ -35,19 +47,19 @@ export default function Profile(props) {
   const handleItemPress = index => {
     switch (index) {
       case 0:
-       props.navigation.navigate("EditProfile")
+        props.navigation.navigate('EditProfile');
         break;
       case 1:
-        props.navigation.navigate("ShippingAddress")
+        props.navigation.navigate('ShippingAddress');
         break;
       case 2:
-        props.navigation.navigate("PrivacyPolicy")
+        props.navigation.navigate('PrivacyPolicy');
         break;
       case 3:
-        props.navigation.navigate("HelpCenter")
+        props.navigation.navigate('HelpCenter');
         break;
       case 4:
-        Alert.alert('Logout Pressed', 'You pressed Logout.');
+        showBottomSheet();
         break;
       default:
         break;
@@ -74,7 +86,11 @@ export default function Profile(props) {
       </TouchableOpacity>
     );
   };
-
+  const Handlelogout = async () => {
+      await AsyncStorage.removeItem('isUser');
+      setUser(null);
+   
+  }
   return (
     <ImageBackground source={background} style={styles.container}>
       <View style={styles.searchengine}>
@@ -104,6 +120,55 @@ export default function Profile(props) {
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
       />
+      <RBSheet
+        ref={refRBSheet}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        customStyles={{
+          wrapper: {
+            backgroundColor: 'transparent',
+          },
+          draggableIcon: {
+            backgroundColor: '#666666',
+          },
+          container: {
+            height: '30%',
+            backgroundColor: '#f5f5f5',
+          },
+        }}>
+        <View style={styles.sheetcontainer}>
+          <TextBold
+            alignSelf={'center'}
+            fontSize={18}
+            color={'#666666'}
+            text={'Logout'}
+          />
+          <View style={styles.verticallinesheet} />
+          <View style={styles.innercontainer}>
+            <TextMedium
+              fontSize={18}
+              color={'#666666'}
+              text={'Are you sure you want to logout?'}
+            />
+          </View>
+          <View style={styles.inlinebuttons}>
+            <TouchableOpacity
+              onPress={() => {
+                hideBottomSheet();
+              }}
+              style={styles.whitebtn}>
+              <TextMedium fontSize={15} color={'#666666'} text={'CANCEL'} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                Handlelogout();
+              }}
+              style={styles.primrybtn}>
+              <TextMedium fontSize={15} color={'#fff'} text={'YES, LOGOUT'} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </RBSheet>
     </ImageBackground>
   );
 }
@@ -151,5 +216,40 @@ const styles = StyleSheet.create({
   userinfo: {
     marginVertical: width(5),
     alignItems: 'center',
+  },
+  sheetcontainer: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  verticallinesheet: {
+    borderBottomWidth: 1,
+    borderColor: '#666666',
+    marginVertical: width(2),
+  },
+  innercontainer: {
+    alignItems: 'center',
+    marginVertical: width(5),
+  },
+  inlinebuttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+  whitebtn: {
+    borderWidth: 1,
+    borderColor: '#666666',
+    padding: 10,
+    width: width(40),
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  primrybtn: {
+    borderWidth: 1,
+    borderColor: '#FF2A00',
+    backgroundColor: '#FF2A00',
+    padding: 10,
+    width: width(40),
+    alignItems: 'center',
+    borderRadius: 10,
   },
 });

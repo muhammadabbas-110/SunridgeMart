@@ -230,7 +230,7 @@ export default function HomeScreen(props) {
             </View>
 
             <View style={styles.spacer}>
-              <TouchableOpacity style={styles.rowbtn}>
+              <TouchableOpacity onPress={()=>{props.navigation.navigate("Notification")}} style={styles.rowbtn}>
                 <Image source={notification} style={styles.rowbtn_image} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.rowbtn}>

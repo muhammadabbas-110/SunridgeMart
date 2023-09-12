@@ -12,6 +12,8 @@ import PaymentMethod from '../../../Screens/AppScreens/PaymentMethod';
 import EditProfile from '../../../Screens/AppScreens/EditProfile';
 import PrivacyPolicy from '../../../Screens/AppScreens/PrivacyPolicy';
 import HelpCenter from '../../../Screens/AppScreens/HelpCenter';
+import AdminChat from '../../../Screens/AppScreens/AdminChat';
+import Notification from '../../../Screens/AppScreens/Notification';
 
 const Stack = createStackNavigator();
 
@@ -101,6 +103,22 @@ export default function AppStack() {
          <Stack.Screen
         name="HelpCenter"
         component={HelpCenter}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+        <Stack.Screen
+        name="AdminChat"
+        component={AdminChat}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+         <Stack.Screen
+        name="Notification"
+        component={Notification}
         options={{
           headerShown: false,
           ...TransitionPresets.SlideFromRightIOS,
