@@ -24,6 +24,7 @@ import maida from '../../Assest/Images/maida-1kg-removebg-preview.png';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import CustomButton from '../../component/CustomButton';
 import TextRegular from '../../component/TextRegular';
+import { BlurView } from '@react-native-community/blur';
 
 export default function Cart(props) {
   const refRBSheet = useRef();
@@ -151,89 +152,88 @@ export default function Cart(props) {
           text={'CHECKOUT'}
         />
       </View>
-      <RBSheet
-        ref={refRBSheet}
-        closeOnDragDown={true}
-        closeOnPressMask={false}
-        customStyles={{
-          wrapper: {
-            backgroundColor: 'transparent',
-          },
-          draggableIcon: {
-            backgroundColor: '#666666',
-          },
-        }}>
-        <View style={styles.sheetcontainer}>
-          {selectedItem && (
-            <>
-              <TextBold
-                alignSelf={'center'}
-                fontSize={18}
-                color={'#666666'}
-                text={'Leave A Review'}
-              />
-              <View style={styles.verticallinesheet} />
-              <View style={styles.cartcontainer}>
-                <View style={styles.firstsection}>
-                  <View style={styles.itemimagecontainer}>
-                    <Image
-                      source={selectedItem.image}
-                      style={styles.itemimage}
-                    />
+        <RBSheet
+          ref={refRBSheet}
+          closeOnDragDown={true}
+          closeOnPressMask={false}
+          customStyles={{
+       
+            draggableIcon: {
+              backgroundColor: '#666666',
+            },
+          }}>
+
+          <View style={styles.sheetcontainer}>
+            {selectedItem && (
+              <>
+                <TextBold
+                  alignSelf={'center'}
+                  fontSize={18}
+                  color={'#666666'}
+                  text={'Leave A Review'}
+                />
+                <View style={styles.verticallinesheet} />
+                <View style={styles.cartcontainer}>
+                  <View style={styles.firstsection}>
+                    <View style={styles.itemimagecontainer}>
+                      <Image
+                        source={selectedItem.image}
+                        style={styles.itemimage}
+                      />
+                    </View>
+                    <View style={styles.textview}>
+                      <TextMedium
+                        color={'#333333'}
+                        fontSize={15}
+                        text={selectedItem.name}
+                      />
+                      <View style={{ height: 7 }} />
+                      <TextBold
+                        color={'#FF2A00'}
+                        fontSize={18}
+                        text={selectedItem.price}
+                      />
+                    </View>
                   </View>
-                  <View style={styles.textview}>
-                    <TextMedium
-                      color={'#333333'}
-                      fontSize={15}
-                      text={selectedItem.name}
-                    />
-                    <View style={{ height: 7 }} />
-                    <TextBold
-                      color={'#FF2A00'}
-                      fontSize={18}
-                      text={selectedItem.price}
-                    />
+                  <View style={styles.secoundsection}>
+                    <TouchableOpacity
+                      onPress={() => refRBSheet.current.close()}
+                      style={styles.deletconatiner}>
+                      <Image source={deleteicon} style={styles.delicon} />
+                    </TouchableOpacity>
+                    <View style={styles.countercontainer}>
+                      <TouchableOpacity
+                        onPress={() => decrementCount(selectedItem.id)}
+                        style={styles.innerspacecounter}>
+                        <Image source={sub} style={styles.imgcounter} />
+                      </TouchableOpacity>
+                      <Text style={styles.count}>
+                        {itemCounts[selectedItem.id]}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => incrementCount(selectedItem.id)}
+                        style={styles.innerspacecounter}>
+                        <Image source={add} style={styles.imgcounter} />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
-                <View style={styles.secoundsection}>
-                  <TouchableOpacity
-                    onPress={() => refRBSheet.current.close()}
-                    style={styles.deletconatiner}>
-                    <Image source={deleteicon} style={styles.delicon} />
-                  </TouchableOpacity>
-                  <View style={styles.countercontainer}>
-                    <TouchableOpacity
-                      onPress={() => decrementCount(selectedItem.id)}
-                      style={styles.innerspacecounter}>
-                      <Image source={sub} style={styles.imgcounter} />
-                    </TouchableOpacity>
-                    <Text style={styles.count}>
-                      {itemCounts[selectedItem.id]}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => incrementCount(selectedItem.id)}
-                      style={styles.innerspacecounter}>
-                      <Image source={add} style={styles.imgcounter} />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </>
-          )}
-          <View style={styles.sheetbuttonscontainer}>
-            <TouchableOpacity style={styles.transbtn}>
-              <TextMedium fontSize={14} color={'#666666'} text={'CANCEL'} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.colorbtn}>
-              <TextMedium
-                fontSize={14}
-                color={'#ffff'}
-                text={'Yes, remove'}
-              />
-            </TouchableOpacity>
+              </>
+            )}
+            <View style={styles.sheetbuttonscontainer}>
+              <TouchableOpacity style={styles.transbtn}>
+                <TextMedium fontSize={14} color={'#666666'} text={'CANCEL'} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.colorbtn}>
+                <TextMedium
+                  fontSize={14}
+                  color={'#ffff'}
+                  text={'Yes, remove'}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </RBSheet>
+        </RBSheet>
     </SafeAreaView>
   );
 }

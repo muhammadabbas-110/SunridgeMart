@@ -165,7 +165,11 @@ export default function HomeScreen(props) {
   };
   const Itemlist = ({item}) => {
     return (
-      <TouchableOpacity onPress={()=>{props.navigation.navigate("ProductDetail")}} style={styles.itemcontainer}>
+      <TouchableOpacity
+        onPress={() => {
+          props.navigation.navigate('ProductDetail');
+        }}
+        style={styles.itemcontainer}>
         <TouchableOpacity style={styles.itemimageview}>
           <Image source={wheart} style={styles.itemimgheart} />
         </TouchableOpacity>
@@ -230,10 +234,18 @@ export default function HomeScreen(props) {
             </View>
 
             <View style={styles.spacer}>
-              <TouchableOpacity onPress={()=>{props.navigation.navigate("Notification")}} style={styles.rowbtn}>
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate('Notification');
+                }}
+                style={styles.rowbtn}>
                 <Image source={notification} style={styles.rowbtn_image} />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.rowbtn}>
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate('WishList');
+                }}
+                style={styles.rowbtn}>
                 <Image source={heart} style={styles.rowbtn_image} />
               </TouchableOpacity>
             </View>
@@ -247,7 +259,10 @@ export default function HomeScreen(props) {
               fontSize={16}
               text={'Special Offers'}
             />
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                props.navigation.navigate('AllProductList');
+              }}>
               <TextMedium color={'#333333'} fontSize={16} text={'See All'} />
             </TouchableOpacity>
           </View>
@@ -283,7 +298,10 @@ export default function HomeScreen(props) {
         <View>
           <View style={styles.rowheading}>
             <TextMedium color={'#333333'} fontSize={16} text={'Most Popular'} />
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                props.navigation.navigate('AllProductList');
+              }}>
               <TextMedium color={'#333333'} fontSize={16} text={'See All'} />
             </TouchableOpacity>
           </View>

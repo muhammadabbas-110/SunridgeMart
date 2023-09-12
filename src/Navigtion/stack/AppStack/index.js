@@ -14,6 +14,8 @@ import PrivacyPolicy from '../../../Screens/AppScreens/PrivacyPolicy';
 import HelpCenter from '../../../Screens/AppScreens/HelpCenter';
 import AdminChat from '../../../Screens/AppScreens/AdminChat';
 import Notification from '../../../Screens/AppScreens/Notification';
+import WishList from '../../../Screens/AppScreens/WishList';
+import AllProductList from '../../../Screens/AppScreens/AllProductList';
 
 const Stack = createStackNavigator();
 
@@ -119,6 +121,22 @@ export default function AppStack() {
          <Stack.Screen
         name="Notification"
         component={Notification}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+         <Stack.Screen
+        name="WishList"
+        component={WishList}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+          <Stack.Screen
+        name="AllProductList"
+        component={AllProductList}
         options={{
           headerShown: false,
           ...TransitionPresets.SlideFromRightIOS,
