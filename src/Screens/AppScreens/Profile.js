@@ -5,14 +5,19 @@ import {
   TouchableOpacity,
   ImageBackground,
   FlatList,
+
 } from 'react-native';
 import React, {useState, useRef,useContext} from 'react';
 import BackButton from '../../component/BackButton';
+import Modal from "react-native-modal";
 import {height, width} from 'react-native-dimension';
 import arrow from '../../Assest/Images/down-arrow.png';
 import userimg from '../../Assest/Images/userimg.png';
 import editprofile from '../../Assest/Images/editprofile.png';
+import CustomButton from '../../component/CustomButton';
 import background from '../../Assest/Images/whitebackground.png';
+import { ActionSheet } from 'react-native-cross-actionsheet';
+import ImagePicker from 'react-native-image-crop-picker';
 import TextRegular from '../../component/TextRegular';
 import user from '../../Assest/Images/user.png';
 import address from '../../Assest/Images/placeholder.png';
@@ -29,7 +34,9 @@ import { setLogOut,setUser } from '../../redux/slices/authReducer';
 
 export default function Profile(props) {
 const dispatch=useDispatch();
+const [imageUri, setImageUri] = useState();
   const refRBSheet = useRef();
+  const [optionVisible,setOptionVisible]=useState(false)
   const showBottomSheet = () => {
     refRBSheet.current.open();
   };
@@ -66,7 +73,70 @@ const dispatch=useDispatch();
         break;
     }
   };
+  const uploadImage = () => {
+   setOptionVisible(true);
+   console.log('hello')
+}
+const selectImage = () => {
+  ImagePicker.openPicker({
+      width: 100,
+      height: 100,
+      mediaType: "photo",
+      cropping: true,
+  }).then(response => {
 
+      setImageUri(response.path)
+      console.log(response.path)
+  }).catch(error => {
+      console.log(error.code, error.message);
+     
+  });
+}
+const useCamera = () => {
+  ImagePicker.openCamera({
+      path: true,
+      multiple: false,
+      width: 100,
+      height: 100,
+      cropping: true,
+  }).then(image => {
+      setImageUri(image.path)
+  }).catch(error => {
+      console.log(error.message);
+      
+  });
+
+}
+const onClose=()=>{
+  setOptionVisible(false);
+}
+const ImageModal=()=>{
+  return(
+    <Modal isVisible={optionVisible} animationType="fade" transparent={true} style={{justifyContent:'center'}}>
+    <View style={{ flex: 1,alignContent:'center',alignSelf:'center',justifyContent:'center' }}>
+      <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+        <TextRegular
+          color={'#333333'}
+          fontSize={18}
+          text={'Select an Image'}
+        />
+         <CustomButton 
+         onPress={useCamera}
+          text={'Take Photo'}/>
+        
+        <CustomButton 
+         onPress={selectImage}
+          text={'Gallery'}/>
+          <CustomButton 
+         onPress={onClose}
+          text={'Cancel'}/>
+        
+      </View>
+    </View>
+  
+  </Modal>
+  )
+}
   const renderItem = ({item, index}) => {
     return (
       <TouchableOpacity
@@ -100,7 +170,8 @@ const dispatch=useDispatch();
           heading={'Fill Your Profile'}
         />
       </View>
-      <TouchableOpacity style={styles.profileimgcontainer}>
+      <TouchableOpacity style={styles.profileimgcontainer} 
+      onPress={uploadImage}>
         <Image source={userimg} style={styles.userimgpic} />
 
         <View style={{alignSelf: 'flex-end'}}>
@@ -115,12 +186,14 @@ const dispatch=useDispatch();
         />
         <TextRegular color={'#333333'} fontSize={18} text={'+92 311862433'} />
       </View>
+      <ImageModal/>
       <View style={{borderBottomWidth: 1, borderColor: '#D6D6D6'}} />
       <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
       />
+          
       <RBSheet
         ref={refRBSheet}
         closeOnDragDown={true}
@@ -169,7 +242,9 @@ const dispatch=useDispatch();
             </TouchableOpacity>
           </View>
         </View>
+   
       </RBSheet>
+      
     </ImageBackground>
   );
 }

@@ -5,7 +5,7 @@ import {height, width} from 'react-native-dimension';
 
 export default function CustomButton(props) {
   return (
-    <TouchableOpacity onPress={props.onPress} style={styles.touchbtn}>
+    <TouchableOpacity onPress={props.onPress} style={[styles.touchbtn,props.styles]}>
       <TextMedium color={'#fff'} fontSize={15} text={props.text} />
     </TouchableOpacity>
   );
