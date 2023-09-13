@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useRef} from 'react';
 import {
   View,
   StyleSheet,
@@ -8,6 +8,8 @@ import {
   FlatList,
   Dimensions,
 } from 'react-native';
+import {vh, vw} from '../../constant';
+import FastImage from 'react-native-fast-image';
 import {height, width} from 'react-native-dimension';
 import TextRegular from '../../component/TextRegular';
 import userimg from '../../Assest/Images/userimage.png';
@@ -28,10 +30,11 @@ import cookingoil from '../../Assest/Images/oil-Cookioil-box-removebg-preview.pn
 import wheart from '../../Assest/Images/whiteheart.png';
 import star from '../../Assest/Images/star-social-favorite-middle-full.png';
 const deviceWidth = Dimensions.get('window').width;
+//import {Carousel,Pagination }from 'react-native-reanimated-carousel';
 
 export default function HomeScreen(props) {
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const ref = useRef();
   const data = [
     {
       id: 1,
@@ -45,6 +48,7 @@ export default function HomeScreen(props) {
       id: 3,
       imgUrl: sliderimage2,
     },
+    
   ];
 
   const Category = [
@@ -89,6 +93,7 @@ export default function HomeScreen(props) {
       name: 'Others',
     },
   ];
+  
   const Productlist = [
     {
       id: 1,
@@ -140,7 +145,9 @@ export default function HomeScreen(props) {
       disount: 2500,
     },
   ];
-
+  const onSnapToItem = (index) => {
+    setCurrentIndex(index); // Update currentIndex state immediately
+  };
   const ProductsInRow = ({item}) => {
     return (
       <View style={styles.productContainer}>
@@ -252,15 +259,17 @@ export default function HomeScreen(props) {
             </TouchableOpacity>
           </View>
           <View>
-            <CustomSlider
+           <CustomSlider
               data={data}
-              onSnapToItem={index => setCurrentIndex(index)}
+              onSnapToItem={(index) => setCurrentIndex(index)}
               dotsLength={data.length}
               loop={true}
               loopClonesPerSide={data.length}
               activeDotIndex={currentIndex}
               imagedata={data[currentIndex].imgUrl}
-            />
+      />
+   
+ 
           </View>
         </View>
       );
@@ -447,6 +456,32 @@ const styles = StyleSheet.create({
   },
   stargap: {
     marginHorizontal: 3,
+  },
+  carasolmain: {
+    width: '100%',
+    position: 'relative',
+    height: height(25),
+    alignItems: 'center',
+
+  },
+  carasolsliderimage: {
+    height: '100%',
+    width: '100%',
+    borderRadius: 20,
+  },
+
+  paginationview: {
+    position: 'absolute',
+    right: 0,
+    left: 0,
+    bottom: 0,
+  },
+  paginationdotstyle: {
+    width: 18,
+    height: 6,
+    borderRadius: 5,
+    marginHorizontal: -5,
+    backgroundColor: '#FF2A00',
   },
   itemtotalcontainer: {
     marginHorizontal: 5,
