@@ -64,30 +64,32 @@ export default function editprofile(props) {
         <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}>
-          <TouchableOpacity style={styles.logoContainer}>
-            <Image source={userr} resizeMode="contain" style={styles.img} />
-          </TouchableOpacity>
+         <TouchableOpacity style={styles.logoContainer}>
+        <Image source={userr} resizeMode='contain' style={styles.img} />
+
+        <View style={{alignSelf: 'flex-end'}}>
+          <Image source={editprofile} style={styles.editicon} />
+        </View>
+      </TouchableOpacity>
           <View>
             <CustomTextinput
-              image={usericon}
               value={fullname}
               onChangeText={setfullname}
               placeholder={'Enter Full Name'}
             />
             <CustomTextinput
-              image={usericon}
               value={NickName}
               onChangeText={setNickName}
               placeholder={'Enter Your  Nick Name'}
             />
             <CustomTextinput
-              image={phoneicon}
               value={phoneno}
               onChangeText={setphoneno}
-              placeholder={'Enter Your  Nick Name'}
+              placeholder={'Enter Your  Phone Number'}
             />
 
             <CustomDatePicker
+            right={true}
               onFocus={() => {
                 Setonfocus(true);
                 openDatePicker();
@@ -98,7 +100,7 @@ export default function editprofile(props) {
               value={date.toLocaleDateString()}
             />
             <CustomTextinput
-              image={emailicon}
+              imageRight={emailicon}
               value={Email}
               onChangeText={setEmail}
               placeholder={'Enter Your  Email'}
