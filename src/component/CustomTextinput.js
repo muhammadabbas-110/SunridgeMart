@@ -6,9 +6,11 @@ export default function CustomTextinput(props) {
   const [onfocus, Setonfocus] = useState(false);
   return (
     <View style={onfocus ? styles.sectionStyle : styles.searchSectionBlur}>
+      {props?.image &&
       <Image source={props.image} style={styles.imageStyle} />
+}
       <TextInput
-        style={styles.textcontainer}
+        style={[styles.textcontainer,{paddingHorizontal:props?.image?0:height(3)}]}
         placeholder={props.placeholder}
         underlineColorAndroid="transparent"
         editable={props.editable}
@@ -22,6 +24,9 @@ export default function CustomTextinput(props) {
         value={props.value}
         onChangeText={props.onChangeText}
       />
+       {props?.imageRight &&
+      <Image source={props.imageRight} style={styles.imageStyle} />
+}
     </View>
   );
 }
@@ -50,6 +55,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#000',
     fontSize: 14,
+
   },
   searchSectionBlur: {
     flexDirection: 'row',

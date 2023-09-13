@@ -58,25 +58,25 @@ export default function Signupscreen(props) {
           </TouchableOpacity>
           <View>
             <CustomTextinput
-              image={usericon}
+            
               value={fullname}
               onChangeText={setfullname}
               placeholder={'Enter Full Name'}
             />
             <CustomTextinput
-              image={usericon}
+          
               value={NickName}
               onChangeText={setNickName}
               placeholder={'Enter Your  Nick Name'}
             />
             <CustomTextinput
-              image={phoneicon}
               value={phoneno}
               onChangeText={setphoneno}
-              placeholder={'Enter Your  Nick Name'}
+              placeholder={'Enter Your  Phone Number'}
             />
 
             <CustomDatePicker
+            right={true}
               onFocus={() => {
                 Setonfocus(true);
                 openDatePicker();
@@ -87,7 +87,7 @@ export default function Signupscreen(props) {
               value={date.toLocaleDateString()}
             />
             <CustomTextinput
-              image={emailicon}
+              imageRight={emailicon}
               value={Email}
               onChangeText={setEmail}
               placeholder={'Enter Your  Email'}

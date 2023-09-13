@@ -17,17 +17,17 @@ export default function CustomDatePicker(props) {
   return (
     <View
     style={onfocus ? styles.sectionStyle : styles.searchSectionBlur}>
-    <Image source={calendar} style={styles.imageStyle} />
+    {!props?.right &&<Image source={calendar} style={styles.imageStyle} />}
     <TextInput
       ref={inputRef}
-      style={styles.textcontainer}
+      style={[styles.textcontainer,{paddingHorizontal:props?.right?height(3):0}]}
       placeholder="Select a Date"
       underlineColorAndroid="transparent"
       onFocus={props.onFocus}
       onBlur={props.onBlur}
       value={props.value}
     />
-    
+        {props.right &&<Image source={calendar} style={styles.imageStyle} />}
   </View>
   )
 }

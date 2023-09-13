@@ -14,10 +14,10 @@ export default function CustomSlider(props) {
     const CarouselCardItem = ({item, index}) => {
         return (
           <View style={styles.carasolmain}>
-            <Image
+            <FastImage
               source={props.imagedata}
               style={styles.carasolsliderimage}
-              resizeMode={'contain'}
+              resizeMode={FastImage.resizeMode.contain}
             />
             <View style={styles.paginationview}>
               <Pagination

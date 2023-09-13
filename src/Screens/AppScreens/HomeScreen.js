@@ -263,7 +263,7 @@ export default function HomeScreen(props) {
               data={data}
               onSnapToItem={(index) => setCurrentIndex(index)}
               dotsLength={data.length}
-              loop={true}
+              loop={false}
               loopClonesPerSide={data.length}
               activeDotIndex={currentIndex}
               imagedata={data[currentIndex].imgUrl}
