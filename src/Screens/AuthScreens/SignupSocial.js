@@ -30,7 +30,7 @@ export default function SignupSocial(props) {
         </TouchableOpacity>
         <TouchableOpacity style={styles.btnsocial}>
           <Image source={googleicon} style={styles.socialicons} />
-          <TextRegular fontSize={16} text={'Continue With Facebook'} />
+          <TextRegular fontSize={16} text={'Continue With Google'} />
         </TouchableOpacity>
         <View style={styles.viewww}>
           <View style={styles.verticalline} />
