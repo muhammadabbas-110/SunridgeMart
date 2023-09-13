@@ -48,7 +48,8 @@ export default function SignupSocial(props) {
             color={'#707070'}
             text={'Do you have an account ?'}
           />
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate('Signupscreen')}>
             <TextMedium fontSize={12} color={'#FF2A00'} text={'  Sign Up'} />
           </TouchableOpacity>
         </View>
