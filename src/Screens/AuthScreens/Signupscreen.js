@@ -20,6 +20,12 @@ import CustomButton from '../../component/CustomButton';
 import phoneicon from '../../Assest/Images/phone.png';
 import CustomDatePicker from '../../component/CustomDatePicker';
 import CustomDropDown from '../../component/CustomDropDown';
+import { ImagePickerErrorCodes } from "../../constant";
+import ImagePicker from 'react-native-image-crop-picker';
+import TextRegular from '../../component/TextRegular';
+import Modal from "react-native-modal";
+import editprofile from '../../Assest/Images/editprofile.png';
+import { showSettingsAlertForPermission,showConfirmationAlert} from "../../common";
 
 export default function Signupscreen(props) {
   const [fullname, setfullname] = useState('');
@@ -29,6 +35,8 @@ export default function Signupscreen(props) {
   const [onfocus, Setonfocus] = useState(false);
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
+  const [imageUri, setImageUri] = useState();
+  const [optionVisible,setOptionVisible]=useState(false)
   const inputRef = useRef(null);
   const [value, setValue] = useState();
   const openDatePicker = () => {
@@ -43,6 +51,78 @@ export default function Signupscreen(props) {
     setDate(selectedDate);
     closeDatePicker();
   };
+  const uploadImage = () => {
+    setOptionVisible(true);
+    console.log('hello')
+ }
+ const selectImage = () => {
+   setOptionVisible(false);
+   ImagePicker.openPicker({
+       width: 100,
+       height: 100,
+       mediaType: "photo",
+       cropping: true,
+   }).then(response => {
+ 
+       setImageUri(response.path)
+       console.log(response.path)
+   }).catch(error => {
+       console.log(error.code, error.message);
+       if (error.code == ImagePickerErrorCodes.permissionMissing) {
+         showSettingsAlertForPermission('photos');
+     }
+      
+   });
+ }
+ const useCamera = () => {
+   setOptionVisible(false);
+   ImagePicker.openCamera({
+       path: true,
+       multiple: false,
+       width: 100,
+       height: 100,
+       cropping: true,
+   }).then(image => {
+       setImageUri(image.path)
+   }).catch(error => {
+       console.log(error.message);
+       if (error.code == ImagePickerErrorCodes.cameraPermission) {
+         showSettingsAlertForPermission('camera');
+     }
+       
+   });
+ 
+ }
+ const onClose=()=>{
+   setOptionVisible(false);
+ }
+ const ImageModal=()=>{
+   return(
+     <Modal isVisible={optionVisible} animationType="fade" transparent={true} style={{justifyContent:'center'}}>
+     <View style={{ flex: 1,alignContent:'center',alignSelf:'center',justifyContent:'center' }}>
+       <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+         <TextRegular
+           color={'#333333'}
+           fontSize={18}
+           text={'Select an Image'}
+         />
+          <CustomButton 
+          onPress={useCamera}
+           text={'Take Photo'}/>
+         
+         <CustomButton 
+          onPress={selectImage}
+           text={'Gallery'}/>
+           <CustomButton 
+          onPress={onClose}
+           text={'Cancel'}/>
+         
+       </View>
+     </View>
+   
+   </Modal>
+   )
+ }
 
   return (
     <ImageBackground source={background} style={styles.container}>
@@ -53,9 +133,14 @@ export default function Signupscreen(props) {
         <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}>
-          <TouchableOpacity style={styles.logoContainer}>
-            <Image source={userr} resizeMode="contain" style={styles.img} />
-          </TouchableOpacity>
+           <TouchableOpacity style={styles.profileimgcontainer} 
+      onPress={uploadImage}>
+        <Image source={userr} style={styles.userimgpic} />
+
+        <View style={{alignSelf: 'flex-end'}}>
+          <Image source={editprofile} style={styles.editicon} />
+        </View>
+      </TouchableOpacity>
           <View>
             <CustomTextinput
             
@@ -98,6 +183,7 @@ export default function Signupscreen(props) {
             </View>
           </View>
         </ScrollView>
+        <ImageModal/>
         <DatePicker
           modal
           mode="date"
@@ -161,6 +247,27 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#000',
     fontSize: 14,
+  },
+  userimgpic: {
+    height: 130,
+    width: 130,
+    borderRadius: 130 / 2,
+  },
+  profileimgcontainer: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+  },
+  iconstyle: {
+    height: 25,
+    width: 25,
+    resizeMode: 'contain',
+  },
+  editicon: {
+    height: 30,
+    width: 30,
+    resizeMode: 'contain',
+    right: width(7),
+    bottom: width(5),
   },
   searchSectionBlur: {
     flexDirection: 'row',

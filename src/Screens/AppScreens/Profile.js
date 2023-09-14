@@ -8,7 +8,9 @@ import {
 
 } from 'react-native';
 import React, {useState, useRef,useContext} from 'react';
+import { showSettingsAlertForPermission,showConfirmationAlert} from "../../common";
 import BackButton from '../../component/BackButton';
+import { ImagePickerErrorCodes } from "../../constant";
 import Modal from "react-native-modal";
 import {height, width} from 'react-native-dimension';
 import arrow from '../../Assest/Images/down-arrow.png';
@@ -78,6 +80,7 @@ const [imageUri, setImageUri] = useState();
    console.log('hello')
 }
 const selectImage = () => {
+  setOptionVisible(false);
   ImagePicker.openPicker({
       width: 100,
       height: 100,
@@ -89,10 +92,14 @@ const selectImage = () => {
       console.log(response.path)
   }).catch(error => {
       console.log(error.code, error.message);
+      if (error.code == ImagePickerErrorCodes.permissionMissing) {
+        showSettingsAlertForPermission('photos');
+    }
      
   });
 }
 const useCamera = () => {
+  setOptionVisible(false);
   ImagePicker.openCamera({
       path: true,
       multiple: false,
@@ -103,6 +110,9 @@ const useCamera = () => {
       setImageUri(image.path)
   }).catch(error => {
       console.log(error.message);
+      if (error.code == ImagePickerErrorCodes.cameraPermission) {
+        showSettingsAlertForPermission('camera');
+    }
       
   });
 

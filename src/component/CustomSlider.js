@@ -47,8 +47,7 @@ export default function CustomSlider(props) {
     onSnapToItem={props.onSnapToItem}
    // useScrollView={true}
     autoplay={true}
-    autoplayInterval={3000}
-    loop={props.loop} 
+    
     loopClonesPerSide={props.loopClonesPerSide} 
   />
   )
