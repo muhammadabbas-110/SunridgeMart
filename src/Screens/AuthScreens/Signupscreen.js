@@ -17,6 +17,7 @@ import usericon from '../../Assest/Images/user.png';
 import emailicon from '../../Assest/Images/email.png';
 import CustomTextinput from '../../component/CustomTextinput';
 import CustomButton from '../../component/CustomButton';
+import {AppRegex} from '../../constant';
 import phoneicon from '../../Assest/Images/phone.png';
 import CustomDatePicker from '../../component/CustomDatePicker';
 import CustomDropDown from '../../component/CustomDropDown';
@@ -37,8 +38,25 @@ export default function Signupscreen(props) {
   const [open, setOpen] = useState(false);
   const [imageUri, setImageUri] = useState();
   const [optionVisible,setOptionVisible]=useState(false)
+  const [password, setPassword] = useState('');
+  const [secureText,setSecureText]=useState(true);
+  const [confirmSecureText,setConfirmSecureText]=useState(true)
+  const [confirmPassword, setConfirmPassword] = useState('');
   const inputRef = useRef(null);
   const [value, setValue] = useState();
+  const [newPassSecure, setNewPassSecure] = useState(true);
+  const [confirmPassHide, setConfirmPassHide] = useState(false);
+
+  const [validationMessage, setValidationMessage] = useState({
+    email: '',
+    password: '',
+    repassword: '',
+    name:'',
+    nickname:'',
+    phone:'',
+    dob:'',
+    gender:'',
+})
   const openDatePicker = () => {
     setOpen(true);
   };
@@ -96,6 +114,70 @@ export default function Signupscreen(props) {
  const onClose=()=>{
    setOptionVisible(false);
  }
+ const ContinueButton=()=>{
+  const validateInputs = () => {
+    let check = true;
+    let message = {
+        email: '',
+        password: '',
+        repassword: ''
+    };
+    if (Email?.trim() == '') {
+        check = false;
+        message.email = 'Email is required';
+    } else if (AppRegex.isInvalidate(Email, AppRegex.Email)) {
+        check = false;
+        message.email = 'Email is invalid'
+    }
+    if (password?.trim() == '') {
+        check = false;
+        message.password = 'Password is required';
+    }
+    else if (password?.trim().length < 8) {
+        check = false;
+        message.password = 'Must be at least 8 characters long'
+    }
+    else if (password?.trim() != confirmPassword?.trim()) {
+        check = false;
+        message.repassword = 'Password mismatch';
+    }
+    if(fullname?.trim()==""){
+      check=false,
+      message.name="Fullname is required"
+    }
+    else if (AppRegex.isInvalidate(fullname, AppRegex.name)) {
+      check = false;
+      message.name = 'Fullname is invalid'
+  }
+    if(NickName?.trim()==""){
+      check=false,
+      message.nickname="Nickname is required"
+    }
+    if(phoneno?.trim()==""){
+      check=false,
+      message.phone="Phone number is required"
+    }
+
+
+
+    setValidationMessage(message);
+    return check;
+};
+const Submit=()=>{
+  if (validateInputs()) {
+   props.navigation.navigate('LoginScreen')
+  }
+
+}
+  
+  return(
+  <View style={{alignItems: 'center'}}>
+  <CustomButton 
+  onPress={Submit}
+  text={'CONTINUE'} />
+</View>
+ )
+ }
  const ImageModal=()=>{
    return(
      <Modal isVisible={optionVisible} animationType="fade" transparent={true} style={{justifyContent:'center'}}>
@@ -131,6 +213,7 @@ export default function Signupscreen(props) {
       </View>
       <SafeAreaView style={styles.containersafearea}>
         <ScrollView
+        keyboardShouldPersistTaps='handled'
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}>
            <TouchableOpacity style={styles.profileimgcontainer} 
@@ -147,17 +230,20 @@ export default function Signupscreen(props) {
               value={fullname}
               onChangeText={setfullname}
               placeholder={'Enter Full Name'}
+              errorMessage={validationMessage.name}
             />
             <CustomTextinput
           
               value={NickName}
               onChangeText={setNickName}
               placeholder={'Enter Your  Nick Name'}
+              errorMessage={validationMessage.nickname}
             />
             <CustomTextinput
               value={phoneno}
               onChangeText={setphoneno}
               placeholder={'Enter Your  Phone Number'}
+              errorMessage={validationMessage.phone}
             />
 
             <CustomDatePicker
@@ -176,11 +262,37 @@ export default function Signupscreen(props) {
               value={Email}
               onChangeText={setEmail}
               placeholder={'Enter Your  Email'}
+              errorMessage={validationMessage.email}
+            />
+             <CustomTextinput
+              value={password}
+              onChangeText={setPassword}
+              Password={true}
+              secureTextEntry={secureText}
+           
+              show={newPassSecure}
+              showPress={()=>{setNewPassSecure(!newPassSecure)
+              setSecureText(!secureText)}}
+              hidePress={()=>{setNewPassSecure(!newPassSecure)
+                setSecureText(!secureText)}}
+              placeholder={'Enter Your  Password'}
+              errorMessage={validationMessage.password}
+            />
+            <CustomTextinput
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              Password={true}
+              secureTextEntry={confirmSecureText}
+              show={confirmPassHide}
+              showPress={()=>{setConfirmPassHide(!confirmPassHide)
+              setConfirmSecureText(!confirmSecureText)}}
+              hidePress={()=>{setConfirmPassHide(!confirmPassHide)
+                setConfirmSecureText(!confirmSecureText)}}
+              placeholder={'Enter Your Confirm Password'}
+              errorMessage={validationMessage.repassword}
             />
             <CustomDropDown value={value} setValue={setValue} />
-            <View style={{alignItems: 'center'}}>
-              <CustomButton text={'CONTINUE'} />
-            </View>
+         <ContinueButton/>
           </View>
         </ScrollView>
         <ImageModal/>

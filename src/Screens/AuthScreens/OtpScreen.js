@@ -19,11 +19,13 @@ import {
 } from 'react-native-confirmation-code-field';
 import fonts from '../../Assest/Fonts';
 import CustomButton from '../../component/CustomButton';
+import InputErrorMessage from '../../component/ErrorMessage';
 const CELL_COUNT = 4;
 
 export default function OtpScreen(props) {
   const [value, setValue] = useState('');
   const [remainingTime, setRemainingTime] = useState(60); // 60 seconds
+  const [selectedMode,setSelectedMode]=useState(props.route?.params?.email?props.route?.params?.email:props.route?.params?.phone)
   const [showResendButton, setShowResendButton] = useState(false); // Declare showResendButton state
 
   useEffect(() => {
@@ -49,6 +51,7 @@ export default function OtpScreen(props) {
   });
   const handleResendOTP = () => {
     // Logic to resend OTP
+  
     setRemainingTime(60); // Reset timer
     setShowResendButton(false); // Hide the resend button
   };
@@ -64,7 +67,7 @@ export default function OtpScreen(props) {
             fontSize={16}
             text={'Code Has Been Send To'}
           />
-          <TextRegular color={'#333333'} fontSize={16} text={'+1 111****33'} />
+          <TextRegular color={'#333333'} fontSize={16} text={selectedMode} />
         </View>
 
         <CodeField
@@ -85,7 +88,9 @@ export default function OtpScreen(props) {
             </Text>
           )}
         />
-      
+        {value=="" && value?.length<4 &&
+      <InputErrorMessage value="Enter  valid otp"/>
+        }
         <View
           style={{
             flexDirection: 'row',
@@ -111,7 +116,9 @@ export default function OtpScreen(props) {
    
       </View>
       <View style={{position:'absolute',bottom:10,alignSelf:'center'}}>
-              <CustomButton onPress={()=>{props.navigation.navigate("NewPasswordScreen")}} text={'CONTINUE'} />
+              <CustomButton onPress={()=>{
+                if(value!="" && value?.length==4){
+                props.navigation.navigate("NewPasswordScreen")}}} text={'CONTINUE'} />
             </View>
     </ImageBackground>
   );

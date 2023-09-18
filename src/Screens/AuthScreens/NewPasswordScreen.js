@@ -20,19 +20,63 @@ export default function NewPasswordScreen(props) {
   const [Password, setPassword] = useState('');
   const [newpassword, setnewpassword] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [newPassSecure, setNewPassSecure] = useState(true);
+  const [confirmPassHide, setConfirmPassHide] = useState(true);
+  const [secureText,setSecureText]=useState(true);
+  const [confirmSecureText,setConfirmSecureText]=useState(true)
+  const [validationMessage, setValidationMessage] = useState({
+    password: '',
+    repassword: '',
+  
+})
 
+ 
+  const ContinueButton=()=>{
+    const validateInputs = () => {
+      let check = true;
+      let message = {
+          password: '',
+          repassword: ''
+      };
+     
+      if (Password?.trim() == '') {
+          check = false;
+          message.password = 'Password is required';
+      }
+      else if (Password?.trim().length < 8) {
+          check = false;
+          message.password = 'Must be at least 8 characters long'
+      }
+      else if (newpassword?.trim() != newpassword?.trim()) {
+          check = false;
+          message.repassword = 'Password mismatch';
+      }
+    
+      setValidationMessage(message);
+      return check;
+  };
   const handlepress = () => {
+    if(validateInputs()){
     setModalVisible(true);
     setTimeout(() => {
       setModalVisible(false);
+      props.navigation.navigate('LoginScreen')
     }, 3000);
+  }
   };
+    return(
+      <View style={{alignItems: 'center'}}>
+      <CustomButton onPress={() => handlepress()} text={'CONTINUE'} />
+    </View>
+    )
+  }
   return (
     <ImageBackground source={background} style={styles.container}>
       <View style={styles.containerback}>
         <BackButton  onPress={() => props.navigation.goBack()} heading={'Forgot Password'} />
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}
+       keyboardShouldPersistTaps='handled'>
         <View style={{marginTop: width(10), alignItems: 'center'}}>
           <Image source={forgotpass} resizeMode="contain" style={styles.img} />
         </View>
@@ -54,19 +98,33 @@ export default function NewPasswordScreen(props) {
             image={lock}
             value={Password}
             onChangeText={setPassword}
-            placeholder={'Enter Your Password'}
-            secureTextEntry={true}
+            Password={true}
+              secureTextEntry={secureText}
+           
+              show={newPassSecure}
+              showPress={()=>{setNewPassSecure(!newPassSecure)
+              setSecureText(!secureText)}}
+              hidePress={()=>{setNewPassSecure(!newPassSecure)
+                setSecureText(!secureText)}}
+              placeholder={'Enter Your  Password'}
+              errorMessage={validationMessage.password}
           />
           <CustomTextinput
             image={lock}
             value={newpassword}
             onChangeText={setnewpassword}
-            placeholder={'Enter Your Password'}
-            secureTextEntry={true}
+            Password={true}
+            secureTextEntry={confirmSecureText}
+            show={confirmPassHide}
+            showPress={()=>{setConfirmPassHide(!confirmPassHide)
+            setConfirmSecureText(!confirmSecureText)}}
+            hidePress={()=>{setConfirmPassHide(!confirmPassHide)
+              setConfirmSecureText(!confirmSecureText)}}
+            placeholder={'Enter Your Confirm Password'}
+            errorMessage={validationMessage.repassword}
+           
           />
-          <View style={{alignItems: 'center'}}>
-            <CustomButton onPress={() => handlepress()} text={'CONTINUE'} />
-          </View>
+         <ContinueButton/>
         </View>
       </ScrollView>
       <CustomAlert

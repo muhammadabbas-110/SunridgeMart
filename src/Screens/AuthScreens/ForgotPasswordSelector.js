@@ -5,7 +5,7 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React,{useState} from 'react';
 import background from '../../Assest/Images/whitebackground.png';
 import emailsend from '../../Assest/Images/emailsend.png';
 import forgotpass from '../../Assest/Images/forgotpass.png';
@@ -15,6 +15,10 @@ import TextRegular from '../../component/TextRegular';
 import BackButton from '../../component/BackButton';
 
 export default function ForgotPasswordSelector(props) {
+  const [selected,setSelected]=useState(false);
+  const [phoneSelected,setPhoneSelected]=useState(true);
+  const [email,setEmail]=useState("info@email.com");
+  const [phone,setPone]=useState('+1 111****33');
   return (
     <ImageBackground source={background} style={styles.container}>
       <View style={styles.containerback}>
@@ -33,23 +37,26 @@ export default function ForgotPasswordSelector(props) {
       </View>
       <TouchableOpacity
         onPress={() => {
-          props.navigation.navigate('OtpScreen');
+          setSelected(false)
+          props.navigation.navigate('OtpScreen',{phone:phone});
         }}
-        style={styles.firstbutton}>
+        style={[styles.firstbutton,{borderColor:phoneSelected?'#FF2A00':'#333333'}]}>
         <View style={styles.iconcontainerred}>
           <Image source={chat} style={styles.icon} />
         </View>
         <View style={styles.spacing}>
           <TextRegular fontSize={18} color={'#333333'} text={'Via SMS'} />
-          <TextRegular fontSize={18} color={'#333333'} text={'+1 111****33'} />
+          <TextRegular fontSize={18} color={'#333333'} text={phone} />
         </View>
       </TouchableOpacity>
 
       <TouchableOpacity
         onPress={() => {
-          props.navigation.navigate('OtpScreen');
+          setSelected(true)
+          setPhoneSelected(false);
+          props.navigation.navigate('OtpScreen',{email:email});
         }}
-        style={styles.secoundbutton}>
+        style={[styles.secoundbutton,{borderColor:selected &&'#FF2A00'}]}>
         <View style={styles.secoundiconcontainer}>
           <Image source={emailsend} style={styles.icon} />
         </View>
@@ -58,7 +65,7 @@ export default function ForgotPasswordSelector(props) {
           <TextRegular
             fontSize={18}
             color={'#333333'}
-            text={'info@email.com'}
+            text={email}
           />
         </View>
       </TouchableOpacity>

@@ -156,6 +156,10 @@ export default function Cart(props) {
         closeOnDragDown={true}
         closeOnPressMask={false}
         customStyles={{
+          container: {
+          flex:1
+          
+          },
           wrapper: {
             backgroundColor: 'transparent',
           },
@@ -333,6 +337,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
     alignItems: 'center',
+    paddingVertical:height(2)
+   
+    
   },
   transbtn: {
     borderColor: '#666666',
@@ -357,7 +364,8 @@ const styles = StyleSheet.create({
     marginVertical: width(2),
   },
   sheetcontainer: {
-    flex: 1,
+    flex:1,
     backgroundColor: '#f5f5f5',
+   
   },
 });

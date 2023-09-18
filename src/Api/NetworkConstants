@@ -1,0 +1,44 @@
+
+export const axios = require('axios').default;
+
+export let DomainURL = 'https://ideapros-llc-elope-30604.botics.co';
+
+export let ApiURL = 'https://ideapros-llc-elope-30604.botics.co/api/';
+
+//     BadRequest: {
+//         code: 400,
+//         desc: strings.http_400,
+//     },
+//     Unauthorized: {
+//         code: 401,
+//         desc: strings.http_401,
+//     },
+//     Forbidden: {
+//         code: 403,
+//         desc: strings.http_403,
+//     },
+//     NotFound: {
+//         code: 404,
+//         desc: strings.http_404,
+//     },
+//     Timeout: {
+//         code: 408,
+//         desc: strings.http_408
+//     },
+//     decode: (statusCode) => {
+//         switch (statusCode) {
+//             case HTTP_STATUS_CODES.BadRequest.code:
+//                 return HTTP_STATUS_CODES.BadRequest.desc;
+//             case HTTP_STATUS_CODES.Unauthorized.code:
+//                 return HTTP_STATUS_CODES.Unauthorized.desc;
+//             case HTTP_STATUS_CODES.Forbidden.code:
+//                 return HTTP_STATUS_CODES.Forbidden.desc;
+//             case HTTP_STATUS_CODES.NotFound.code:
+//                 return HTTP_STATUS_CODES.NotFound.desc;
+//             case HTTP_STATUS_CODES.Timeout.code:
+//                 return HTTP_STATUS_CODES.Timeout.desc;
+//             default:
+//                 return 'Something went wrong';
+//         }
+//     }
+// };
