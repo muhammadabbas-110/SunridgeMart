@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import HomeScreen from '../../../Screens/AppScreens/HomeScreen';
 import myTab from '../../../Screens/BottomTab.js';
 import ProductDetail from '../../../Screens/AppScreens/ProductDetail';
@@ -14,6 +14,9 @@ import PrivacyPolicy from '../../../Screens/AppScreens/PrivacyPolicy';
 import HelpCenter from '../../../Screens/AppScreens/HelpCenter';
 import AdminChat from '../../../Screens/AppScreens/AdminChat';
 import Notification from '../../../Screens/AppScreens/Notification';
+import WishList from '../../../Screens/AppScreens/WishList';
+import AllProductList from '../../../Screens/AppScreens/AllProductList';
+import TrackOrder from '../../../Screens/AppScreens/TrackOrder';
 
 const Stack = createStackNavigator();
 
@@ -100,7 +103,7 @@ export default function AppStack() {
           ...TransitionPresets.SlideFromRightIOS,
         }}
       />
-         <Stack.Screen
+      <Stack.Screen
         name="HelpCenter"
         component={HelpCenter}
         options={{
@@ -108,7 +111,7 @@ export default function AppStack() {
           ...TransitionPresets.SlideFromRightIOS,
         }}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="AdminChat"
         component={AdminChat}
         options={{
@@ -116,9 +119,33 @@ export default function AppStack() {
           ...TransitionPresets.SlideFromRightIOS,
         }}
       />
-         <Stack.Screen
+      <Stack.Screen
         name="Notification"
         component={Notification}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="WishList"
+        component={WishList}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="AllProductList"
+        component={AllProductList}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="TrackOrder"
+        component={TrackOrder}
         options={{
           headerShown: false,
           ...TransitionPresets.SlideFromRightIOS,

@@ -59,7 +59,7 @@ export default function Active(props) {
         </View>
 
         <View style={styles.btncontainer}>
-          <TouchableOpacity style={styles.colorbtn}>
+          <TouchableOpacity onPress={()=>{props.navigation.navigate("TrackOrder")}} style={styles.colorbtn}>
             <TextRegular color={'#fff'} fontSize={10} text={'TRACK ORDER'} />
           </TouchableOpacity>
           <View style={styles.whitebtn}>

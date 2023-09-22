@@ -24,6 +24,7 @@ import maida from '../../Assest/Images/maida-1kg-removebg-preview.png';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import CustomButton from '../../component/CustomButton';
 import TextRegular from '../../component/TextRegular';
+import { BlurView } from '@react-native-community/blur';
 
 export default function Cart(props) {
   const refRBSheet = useRef();
