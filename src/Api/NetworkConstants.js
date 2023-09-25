@@ -3,7 +3,7 @@ export const axios = require('axios').default;
 
 export let DomainURL = 'https://ideapros-llc-elope-30604.botics.co';
 
-export let ApiURL = 'https://ideapros-llc-elope-30604.botics.co/api/';
+export let ApiURL = 'http://localhost:7104/api/';
 
 //     BadRequest: {
 //         code: 400,

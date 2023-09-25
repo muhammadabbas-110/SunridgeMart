@@ -47,30 +47,16 @@ const RootNavigation = () => {
     );
   }
 
-  const handleLogin = async (username, password) => {
-    if (username === 'admin' && password === 123) {
-      const userData = {username: 'admin'};
-      await AsyncStorage.setItem('isUser', JSON.stringify(userData));
-      dispatch(setUser(userData));
-      dispatch(logIn(userData))
-
-    }
-  };
-
-  const handleLogout = async () => {
-    await AsyncStorage.removeItem('isUser');
-    dispatch(setUser(null));
-    dispatch(setLogOut(null));
-  };
+ 
 
   const renderStack = () => {
     if (isLoggedIn) {
       return (
-          <AppStack onLogout={handleLogout} />
+          <AppStack  />
       );
     } else {
       return (
-          <AuthStack onLogin={handleLogin} />
+          <AuthStack />
       );
       }
     }

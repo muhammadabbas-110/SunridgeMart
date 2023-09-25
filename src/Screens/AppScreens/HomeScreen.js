@@ -1,4 +1,4 @@
-import React, {useState,useRef} from 'react';
+import React, {useState,useRef,useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -16,6 +16,9 @@ import userimg from '../../Assest/Images/userimage.png';
 import notification from '../../Assest/Images/notification.png';
 import heart from '../../Assest/Images/heart.png';
 import TextBold from '../../component/TextBold';
+import Alert from '../../component/Alert';
+import ApiManager from '../../Api/ApiManager';
+import { AllProductService } from '../../Api/Home';
 import searchicon from '../../Assest/Images/magnifying-glass.png';
 import CustomTextinput from '../../component/CustomTextinput';
 import TextMedium from '../../component/TextMedium';
@@ -34,7 +37,11 @@ const deviceWidth = Dimensions.get('window').width;
 
 export default function HomeScreen(props) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading,setLoading]=useState();
   const ref = useRef();
+  useEffect(()=>{
+getProduct();
+  },[])
   const data = [
     {
       id: 1,
@@ -162,7 +169,19 @@ export default function HomeScreen(props) {
       </View>
     );
   };
+const getProduct=()=>{
+  setLoading(true);
+  ApiManager.fetch(AllProductService,{},onProductResponse,onProductError)
+  
+}
+const onProductResponse=(response)=>{
+  console.log('response',response?.data)
 
+}
+const onProductError=(error)=>{
+  console.log('error',error?.data)
+
+}
   const MostPopular = ({item}) => {
     return (
       <TouchableOpacity style={styles.popularcontainer}>

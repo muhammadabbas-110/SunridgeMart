@@ -12,6 +12,7 @@ export default function CustomDropDown(props) {
     <DropDownPicker
       dropDownContainerStyle={{
         width: '95%',
+        zIndex:10,
         alignSelf: 'center',
         borderWidth: 0,
         elevation: 5,

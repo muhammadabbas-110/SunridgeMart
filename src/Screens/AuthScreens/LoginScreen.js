@@ -8,13 +8,17 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Text,
+  ActivityIndicator,
 } from 'react-native';
 import {height, width} from 'react-native-dimension';
 import BackButton from '../../component/BackButton';
 import background from '../../Assest/Images/whitebackground.png';
+import {AppRegex} from '../../constant';
 import logo from '../../Assest/Images/unityxpress_logo.png';
+import ApiManager from '../../Api/ApiManager';
 import TextBold from '../../component/TextBold';
 import lock from '../../Assest/Images/padlock.png';
+import errorgif from '../../Assest/Images/errorgif.json';
 import emailicon from '../../Assest/Images/email.png';
 import CustomTextinput from '../../component/CustomTextinput';
 import CheckBox from '@react-native-community/checkbox';
@@ -23,18 +27,54 @@ import { useDispatch, useSelector } from 'react-redux';
 import CustomButton from '../../component/CustomButton';
 import fonts from '../../Assest/Fonts';
 import Facebookimg from '../../Assest/Images/facebook.png';
+import { SigninService } from '../../Api/Authentication';
 import googleicon from '../../Assest/Images/google.png';
 import TextMedium from '../../component/TextMedium';
 import AsyncStorage from '@react-native-community/async-storage';
 import { authUser,logIn,setUser} from '../../redux/slices/authReducer';
 import {AppContext} from '../../context';
+import Alert from '../../component/Alert';
 
 export default function LoginScreen(props) {
   const [email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
   const [checked, setChecked] = useState(false);
+  const [secureText,setSecureText]=useState(true);
+  const [loading,setLoading]=useState(false);
+  const [newPassSecure, setNewPassSecure] = useState(true);
+  const [modelVisibleError,setModalVisbileError]=useState(false)
+const [apiError,setApiError]=useState('');
+  const [validationMessage,setValidationMessage]=useState({
+    email:'',
+    password:'',
+  })
   //const {setUser} = useContext(AppContext); // Access setUser from the context
 const dispatch=useDispatch();
+const LoginButton=()=>{
+  const validateInputs = () => {
+   
+    let check = true;
+    let message = {
+        email: '',
+        password: '',
+        
+    };
+    if (email?.trim() == '') {
+        check = false;
+        message.email = 'Email is required';
+    } else if (AppRegex.isInvalidate(email, AppRegex.Email)) {
+        check = false;
+        message.email = 'Email is invalid'
+    }
+    if (Password?.trim() == '') {
+        check = false;
+        message.password = 'Password is required';
+    }
+    
+ 
+    setValidationMessage(message);
+    return check;
+};
   const handleLogin = async (username, password) => {
     console.log(
       'Logging in with username:',
@@ -54,12 +94,54 @@ const dispatch=useDispatch();
   };
 
   const submitdata = () => {
-    if (email && Password) {
-      handleLogin(email, Password);
-    } else {
-      alert('Please enter your fields');
-    }
+   
+    if (validateInputs()) {
+      setLoading(true)
+      ApiManager.fetch(SigninService,
+        {
+          email:email,
+          password:Password
+        },
+        onApiResponse,onApiError)
+     // handleLogin(email, Password);
+    } 
   };
+  const onApiResponse = async(response) => {
+   
+  console.log('Api response',response?.data?.data)
+  const userInfo=response?.data?.data;
+  const userData = {email:userInfo?.email,
+    token:userInfo?.token
+  };
+ await AsyncStorage.setItem('isUser', JSON.stringify(userData));
+ dispatch(setUser(userData));
+dispatch(logIn(userData));
+setLoading(false)
+    };
+    const onApiError = (error) => {
+      setLoading(false);
+      if(error?.response?.data?.message)
+      setApiError(error?.response?.data?.message)
+    else  setApiError("Login Failed")
+    setModalVisbileError(true);
+    };
+  return(
+    <View style={{alignItems: 'center'}}>
+     {loading ?
+     <ActivityIndicator color={'orange'} size={35} />
+   
+              :<CustomButton
+                onPress={() => {
+                  submitdata();
+                }}
+                text={'SIGN IN'}
+              />
+}
+            </View>
+
+  )
+}
+  
   return (
     <ImageBackground source={background} style={styles.container}>
       <View style={styles.containerback}>
@@ -83,13 +165,22 @@ const dispatch=useDispatch();
               value={email}
               onChangeText={setEmail}
               placeholder={'Enter Your Email'}
+              errorMessage={validationMessage.email}
             />
-            <CustomTextinput
-              image={lock}
+             <CustomTextinput
+             image={lock}
               value={Password}
               onChangeText={setPassword}
-              placeholder={'Enter Your Password'}
-              secureTextEntry={true}
+              Password={true}
+              secureTextEntry={secureText}
+           
+              show={newPassSecure}
+              showPress={()=>{setNewPassSecure(!newPassSecure)
+              setSecureText(!secureText)}}
+              hidePress={()=>{setNewPassSecure(!newPassSecure)
+                setSecureText(!secureText)}}
+              placeholder={'Enter Your  Password'}
+              errorMessage={validationMessage.password}
             />
             <View style={styles.View2}>
               <View style={styles.rowcheck}>
@@ -115,14 +206,7 @@ const dispatch=useDispatch();
                 />
               </TouchableOpacity>
             </View>
-            <View style={{alignItems: 'center'}}>
-              <CustomButton
-                onPress={() => {
-                  submitdata();
-                }}
-                text={'SIGN IN'}
-              />
-            </View>
+            <LoginButton/>
             <View style={styles.viewww}>
               <View style={styles.verticalline} />
               <View>
@@ -155,6 +239,14 @@ const dispatch=useDispatch();
                 </TouchableOpacity>
               </View>
             </View>
+            <Alert
+          visible={modelVisibleError}
+         source={errorgif}
+          Message={apiError}
+          Button={() => {
+            setModalVisbileError(!modelVisibleError);
+          }}
+        />
           </View>
         </ScrollView>
       </SafeAreaView>

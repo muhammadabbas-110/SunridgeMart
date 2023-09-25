@@ -7,6 +7,7 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import {height, width} from 'react-native-dimension';
@@ -19,6 +20,11 @@ import CustomTextinput from '../../component/CustomTextinput';
 import CustomButton from '../../component/CustomButton';
 import {AppRegex} from '../../constant';
 import phoneicon from '../../Assest/Images/phone.png';
+import { SignUpService } from '../../Api/Authentication';
+import Alert from '../../component/Alert';
+import axios from 'axios';
+import ApiManager from '../../Api/ApiManager';
+import errorgif from '../../Assest/Images/errorgif.json';
 import CustomDatePicker from '../../component/CustomDatePicker';
 import CustomDropDown from '../../component/CustomDropDown';
 import { ImagePickerErrorCodes } from "../../constant";
@@ -26,6 +32,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import TextRegular from '../../component/TextRegular';
 import Modal from "react-native-modal";
 import editprofile from '../../Assest/Images/editprofile.png';
+import { showCommonErrorAlert } from '../../common';
 import { showSettingsAlertForPermission,showConfirmationAlert} from "../../common";
 
 export default function Signupscreen(props) {
@@ -45,8 +52,11 @@ export default function Signupscreen(props) {
   const inputRef = useRef(null);
   const [value, setValue] = useState();
   const [newPassSecure, setNewPassSecure] = useState(true);
-  const [confirmPassHide, setConfirmPassHide] = useState(false);
-
+  const [confirmPassHide, setConfirmPassHide] = useState(true);
+const [lastName,setLastName]=useState('')
+const [modelVisibleError,setModalVisbileError]=useState(false)
+const [apiError,setApiError]=useState('');
+const [loading,setLoading]=useState(false)
   const [validationMessage, setValidationMessage] = useState({
     email: '',
     password: '',
@@ -115,7 +125,9 @@ export default function Signupscreen(props) {
    setOptionVisible(false);
  }
  const ContinueButton=()=>{
+
   const validateInputs = () => {
+   
     let check = true;
     let message = {
         email: '',
@@ -147,34 +159,63 @@ export default function Signupscreen(props) {
     }
     else if (AppRegex.isInvalidate(fullname, AppRegex.name)) {
       check = false;
-      message.name = 'Fullname is invalid'
+      message.name = 'Firstname is invalid'
   }
     if(NickName?.trim()==""){
       check=false,
-      message.nickname="Nickname is required"
+      message.nickname="Username is required"
     }
     if(phoneno?.trim()==""){
       check=false,
       message.phone="Phone number is required"
     }
-
+    else if(AppRegex.isInvalidate(phoneno?.trim(), AppRegex.phone))
+{ check=false,
+  message.phone="Phone number is invalid"}
 
 
     setValidationMessage(message);
     return check;
 };
-const Submit=()=>{
-  if (validateInputs()) {
-   props.navigation.navigate('LoginScreen')
-  }
+const Submit=async()=>{
 
+  if (validateInputs()) {
+    setLoading(true);
+   const body= {
+    username:NickName,
+    email:Email,
+    password:password,
+    firstName:fullname,
+    lastName:lastName,
+    dateOfBirth:date,
+    phoneNumber:phoneno,
+    gender:0,
+  }
+  ApiManager.fetch(SignUpService,body,onApiResponse,onApiError)
+ 
+   //props.navigation.navigate('LoginScreen')
 }
-  
+}
+const onApiResponse = (response) => {
+  setLoading(false);
+//functionality yet to be
+};
+const onApiError = (error) => {
+  setLoading(false);
+  if(error?.response?.data?.message)
+  setApiError(error?.response?.data?.message)
+else  setApiError("Something went wrong!try again later")
+setModalVisbileError(true);
+};
+
   return(
   <View style={{alignItems: 'center'}}>
-  <CustomButton 
+    {loading ?
+     <ActivityIndicator color={'orange'} size={35} />
+  :<CustomButton 
   onPress={Submit}
   text={'CONTINUE'} />
+    }
 </View>
  )
  }
@@ -229,18 +270,26 @@ const Submit=()=>{
             
               value={fullname}
               onChangeText={setfullname}
-              placeholder={'Enter Full Name'}
+              placeholder={'Enter First Name'}
               errorMessage={validationMessage.name}
             />
+            <CustomTextinput
+            
+            value={lastName}
+            onChangeText={setLastName}
+            placeholder={'Enter Last Name'}
+           
+          />
             <CustomTextinput
           
               value={NickName}
               onChangeText={setNickName}
-              placeholder={'Enter Your  Nick Name'}
+              placeholder={'Enter  Username'}
               errorMessage={validationMessage.nickname}
             />
             <CustomTextinput
               value={phoneno}
+              maxLength={11}
               onChangeText={setphoneno}
               placeholder={'Enter Your  Phone Number'}
               errorMessage={validationMessage.phone}
@@ -291,8 +340,17 @@ const Submit=()=>{
               placeholder={'Enter Your Confirm Password'}
               errorMessage={validationMessage.repassword}
             />
-            <CustomDropDown value={value} setValue={setValue} />
+            <CustomDropDown 
+            value={value} setValue={setValue} />
          <ContinueButton/>
+         <Alert
+          visible={modelVisibleError}
+         source={errorgif}
+          Message={apiError}
+          Button={() => {
+            setModalVisbileError(!modelVisibleError);
+          }}
+        />
           </View>
         </ScrollView>
         <ImageModal/>
@@ -304,6 +362,7 @@ const Submit=()=>{
           onConfirm={handleDateChange}
           onCancel={closeDatePicker}
         />
+         
       </SafeAreaView>
     </ImageBackground>
   );

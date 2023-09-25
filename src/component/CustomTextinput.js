@@ -17,6 +17,7 @@ export default function CustomTextinput(props) {
         placeholder={props.placeholder}
         underlineColorAndroid="transparent"
         editable={props.editable}
+        maxLength={props.maxLength}
         onFocus={() => {
           Setonfocus(true);
         }}

@@ -1,17 +1,18 @@
 
-import { ApiURL, axios } from "./NetworkContants"
-
+import { ApiURL, axios } from './NetworkConstants'
 let number = 0
 
 const ApiManager = {
-    fetch(api, parameters, onReponse, onError) {
+ 
+    fetch(api, parameters, onResponse, onError) {
+        console.log('ckkkkkkkk',api, parameters, onResponse, onError)
         // let dispatch = useDispatch();
         console.log("calling api", ApiURL + api.url, parameters)
         axios({
             method: api.method,
             url: ApiURL + api.url,
-            data: api.method == "GET" ? undefined : parameters,
-            params: api.method != "GET" ? undefined : parameters,
+            data: api.method == "get" ? undefined : parameters,
+            params: api.method != "get" ? undefined : parameters,
             headers: api.headers || { "Content-Type": "application/json" },
             timeout: 30 * 1000,
             timeoutErrorMessage: "No response from server",
@@ -19,15 +20,16 @@ const ApiManager = {
         })
             .then(function (response) {
                 console.log("api response", response)
-                onReponse(response)
+                onResponse(response)
             })
             .catch(function (error) {
                 console.log("api error", error, error.response)
-                ApiManager.handleApiError(error, api, parameters, onReponse, onError)
+                ApiManager.handleApiError(error, api, parameters, onResponse, onError)
             })
     },
 
-    handleApiError(error, api, parameters, onReponse, onError) {
+    handleApiError(error, api, parameters, onResponse, onError) {
+        console.log('errorrrrr',error.message)
         if (error.message == "Network Error") {
             onError({
                 title: "No internet",
@@ -41,7 +43,7 @@ const ApiManager = {
                     }
                 },
                 retryAction: () => {
-                    ApiManager.fetch(api, parameters, onReponse, onError)
+                    ApiManager.fetch(api, parameters, onResponse, onError)
                 },
                 alertActionButton: "Retry",
                 response: error.response
@@ -64,7 +66,7 @@ const ApiManager = {
     removeRequestTokenAxios() {
         axios.defaults.headers.common["Authorization"] = null
     },
-    
+   
 }
 
-export default ApiManager;
+export default ApiManager

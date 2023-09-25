@@ -12,6 +12,7 @@ export const AppRegex = {
     numberOnly: '^[0-9]+$',
     alphabetOnly: '^[A-Za-z]+$',
     name: '^([a-zA-Z\-\_]+(\ |\')?)+$',
+    phone: /^(03|0)([0-9]{10})$/,
     validate(text, regex) {
         return new RegExp(regex).exec(text) != null;
     },
