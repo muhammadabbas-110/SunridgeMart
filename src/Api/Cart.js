@@ -14,7 +14,14 @@ export const GetCartItemService = (customerId) => ({
 })
 export const DeleteCartService = (itemId) => ({
     method: 'DELETE',
-    url: `CartItem/delete/${itemId}`,
+    url: `CartItem/delete?customerId=${itemId}`,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+})
+export const UpdateCartService = (itemId) => ({
+    method: 'PUT',
+    url: `CartItem/update?customerId=${itemId}`,
     headers: {
         'Content-Type': 'application/json'
     }

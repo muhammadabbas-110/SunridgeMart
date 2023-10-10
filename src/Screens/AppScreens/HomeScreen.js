@@ -11,6 +11,8 @@ import {
 import {vh, vw} from '../../constant';
 import FastImage from 'react-native-fast-image';
 import {height, width} from 'react-native-dimension';
+import alerticon from '../../Assest/Images/alerticon.png';
+import AsyncStorage from '@react-native-community/async-storage';
 import TextRegular from '../../component/TextRegular';
 import userimg from '../../Assest/Images/userimage.png';
 import notification from '../../Assest/Images/notification.png';
@@ -20,6 +22,7 @@ import Alert from '../../component/Alert';
 import ApiManager from '../../Api/ApiManager';
 import { AllProductService,AllCategoriesService,GetProductByCategoryService } from '../../Api/Home';
 import searchicon from '../../Assest/Images/magnifying-glass.png';
+import { AddtoWhishlistService } from '../../Api/Wishlist';
 import CustomTextinput from '../../component/CustomTextinput';
 import TextMedium from '../../component/TextMedium';
 import sliderimage2 from '../../Assest/Images/newslider.png';
@@ -34,7 +37,9 @@ import wheart from '../../Assest/Images/whiteheart.png';
 import star from '../../Assest/Images/star-social-favorite-middle-full.png';
 import Other from '../../Assest/Images/other.png';
 import { ActivityIndicator } from 'react-native-paper';
+import CustomAlert from '../../component/CustomAlert';
 const deviceWidth = Dimensions.get('window').width;
+import errorgif from '../../Assest/Images/errorgif.json';
 //import {Carousel,Pagination }from 'react-native-reanimated-carousel';
 let pageNo=1;
 export default function HomeScreen(props) {
@@ -44,6 +49,9 @@ export default function HomeScreen(props) {
   const [productList,setProductList]=useState([]);
   const [productLoading,setProductLoading]=useState(false)
   const [hasMoreData,setMoreData]=useState(0)
+  const [modalVisible, setModalVisible] = useState(false);
+  const [errorMsg,setErrorMsg]=useState('');
+  const [errorVisible,setErrorVisible]=useState(false);
   const pageSize=20;
   const [filterBrandArray,setFilterBrandArray]=useState([{key:"",value:""}])
   const [filterCategoryArray,setFilterCategoryArray]=useState([{key:"",value:""}])
@@ -67,101 +75,7 @@ getProduct();
     },
     
   ];
-
-  /*const Category = [
-    {
-      id: 1,
-      image: require('../../Assest/Images/supplies.png'),
-      name: 'Donate Box',
-    },
-    {
-      id: 2,
-      image: require('../../Assest/Images/rice.png'),
-      name: 'Rice',
-    },
-    {
-      id: 3,
-      image: require('../../Assest/Images/iconbox.png'),
-      name: 'Value Bundle',
-    },
-    {
-      id: 4,
-      image: require('../../Assest/Images/BeasanIcon.png'),
-      name: 'Besan',
-    },
-    {
-      id: 5,
-      image: require('../../Assest/Images/suji2.png'),
-      name: 'Suji',
-    },
-    {
-      id: 6,
-      image: require('../../Assest/Images/flour.png'),
-      name: 'Maida',
-    },
-    {
-      id: 7,
-      image: require('../../Assest/Images/sugar.png'),
-      name: 'Sugar',
-    },
-    {
-      id: 8,
-      image: require('../../Assest/Images/ellipsis.png'),
-      name: 'Others',
-    },
-  ];*/
-  
- /* const Productlist = [
-    {
-      id: 1,
-      image: chakkiaata,
-      name: 'Sunridge Fortified Chakki Atta 5 Kg',
-      rating: 4.5,
-      price: 792,
-      disount: 990,
-    },
-    {
-      id: 2,
-      image: maida,
-      name: 'Sunridge Maida 1 Kg',
-      rating: 4.5,
-      price: 168,
-      disount: 210,
-    },
-    {
-      id: 3,
-      image: basmati,
-      name: 'Premium Basmati Rice 1 Kg',
-      rating: 4.5,
-      price: 432,
-      disount: 540,
-    },
-
-    {
-      id: 4,
-      image: sugar,
-      name: 'Sunridge White Crystal Sugar 1 Kg',
-      rating: 4.5,
-      price: 84,
-      disount: 105,
-    },
-    {
-      id: 5,
-      image: salt,
-      name: 'Sunridge Iodized Salt 800 GM',
-      rating: 4.5,
-      price: 32,
-      disount: 40,
-    },
-    {
-      id: 6,
-      image: cookingoil,
-      name: 'Dastak Cooking Oil Pouch Carton 1 X 5 Lt',
-      rating: 4.5,
-      price: 2000,
-      disount: 2500,
-    },
-  ];*/
+ 
   const onSnapToItem = (index) => {
     setCurrentIndex(index); // Update currentIndex state immediately
   };
@@ -249,6 +163,31 @@ const onProductByCategoriesError=(error)=>{
   setProductLoading(false);
 
 }
+const addToWishlist=async(item)=>{
+  const customerId=await AsyncStorage.getItem('customerID')
+  console.log(customerId,item.id);
+
+if(customerId!=null){
+const data={
+  customerId:customerId,
+  productId:item.id,
+  
+}
+ApiManager.fetch(AddtoWhishlistService(customerId),data,onAddToWishlistResponse,onAddToWishlistError) 
+}
+}
+const onAddToWishlistResponse=(response)=>{
+  console.log('hrll')
+  setModalVisible(true)
+}
+const onAddToWishlistError=(error)=>{
+  console.log('error')
+  setErrorVisible(true)
+  setErrorMsg(error.message)
+  setLoading(false)
+
+}
+
   const MostPopular = ({item}) => {
     return (
       <TouchableOpacity style={styles.popularcontainer} 
@@ -264,7 +203,8 @@ const onProductByCategoriesError=(error)=>{
           props.navigation.navigate('ProductDetail',{id:item?.id});
         }}
         style={styles.itemcontainer}>
-        <TouchableOpacity style={styles.itemimageview}>
+        <TouchableOpacity style={styles.itemimageview} 
+        onPress={()=>addToWishlist(item)}>
           <Image source={wheart} style={styles.itemimgheart} />
         </TouchableOpacity>
         <View style={styles.itemview}>
@@ -433,7 +373,25 @@ const onProductByCategoriesError=(error)=>{
             contentContainerStyle={styles.flatListContainer}
           />
             }
+             <CustomAlert
+        alertheading={'Add to Wishlist'}
+        textmessage={'Item is added to Wishlist'}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+        image={alerticon}
+      />
+      <Alert
+          visible={errorVisible}
+         source={errorgif}
+          Message={errorMsg}
+          Button={() => {
+            setErrorVisible(!errorVisible);
+          }}
+        />
         </View>
+        
       );
     }
   };

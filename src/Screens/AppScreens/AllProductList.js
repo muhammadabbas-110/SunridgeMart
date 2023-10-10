@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import {
   View,
   FlatList,
@@ -8,12 +8,17 @@ import {
   TouchableOpacity,
   TextInput,
   SafeAreaView,
+  ActivityIndicator,
+  
 } from 'react-native';
 import BackButton from '../../component/BackButton';
+import alerticon from '../../Assest/Images/alerticon.png';
+import errorgif from '../../Assest/Images/errorgif.json';
 import {height, width} from 'react-native-dimension';
 import TextMedium from '../../component/TextMedium';
 import TextRegular from '../../component/TextRegular';
 import Glass from '../../Assest/Images/magnifying-glass.png';
+import AsyncStorage from '@react-native-community/async-storage';
 import chakkiaata from '../../Assest/Images/Atta-Fortified-removebg-preview.png';
 import maida from '../../Assest/Images/maida-1kg-removebg-preview.png';
 import basmati from '../../Assest/Images/premium-basmati-rice-1kg-removebg-preview.png';
@@ -22,64 +27,66 @@ import salt from '../../Assest/Images/salt-removebg-preview.png';
 import cookingoil from '../../Assest/Images/oil-Cookioil-box-removebg-preview.png';
 import wheart from '../../Assest/Images/whiteheart.png';
 import star from '../../Assest/Images/star-social-favorite-middle-full.png';
-
+import ApiManager from '../../Api/ApiManager';
+import { AllProductService } from '../../Api/Home';
+import { AddtoWhishlistService } from '../../Api/Wishlist';
+import CustomAlert from '../../component/CustomAlert';
+import Alert from '../../component/Alert';
 const deviceWidth = Dimensions.get('window').width;
-
+let pageNo=1;
 export default function AllProductList(props) {
   const [isSearching, setIsSearching] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [productList,setProductList]=useState();
+  const [productLoading,setProductLoading]=useState(false);
+  const [errorMsg,setErrorMsg]=useState('');
+  const [errorVisible,setErrorVisible]=useState(false);
+  const pageSize=20;
+  const [filterBrandArray,setFilterBrandArray]=useState([{key:"",value:""}])
+  const [filterCategoryArray,setFilterCategoryArray]=useState([{key:"",value:""}])
+  useEffect(()=>{
+    getProduct()
+  },[])
+  const getProduct=()=>{
+    setProductLoading(true)
+    ApiManager.fetch(AllProductService,{filterBrandArray,filterCategoryArray,pageNo,pageSize},onProductResponse,onProductError)
+    
+  }
+  const onProductResponse=(response)=>{
+    console.log('response getProductDAta',response?.data?.data?.products);
+    setProductList(response?.data?.data.products)
+    setProductLoading(false)
+  }
+  const onProductError=(error)=>{
+    console.log('error',error?.data)
+    setProductLoading(false)
   
-  const Productlist = [
-    {
-      id: 1,
-      image: chakkiaata,
-      name: 'Sunridge Fortified Chakki Atta 5 Kg',
-      rating: 4.5,
-      price: 792,
-      disount: 990,
-    },
-    {
-      id: 2,
-      image: maida,
-      name: 'Sunridge Maida 1 Kg',
-      rating: 4.5,
-      price: 168,
-      disount: 210,
-    },
-    {
-      id: 3,
-      image: basmati,
-      name: 'Premium Basmati Rice 1 Kg',
-      rating: 4.5,
-      price: 432,
-      disount: 540,
-    },
-
-    {
-      id: 4,
-      image: sugar,
-      name: 'Sunridge White Crystal Sugar 1 Kg',
-      rating: 4.5,
-      price: 84,
-      disount: 105,
-    },
-    {
-      id: 5,
-      image: salt,
-      name: 'Sunridge Iodized Salt 800 GM',
-      rating: 4.5,
-      price: 32,
-      disount: 40,
-    },
-    {
-      id: 6,
-      image: cookingoil,
-      name: 'Dastak Cooking Oil Pouch Carton 1 X 5 Lt',
-      rating: 4.5,
-      price: 2000,
-      disount: 2500,
-    },
-  ];
+  }
+  const addToWishlist=async(item)=>{
+    const customerId=await AsyncStorage.getItem('customerID')
+    console.log(customerId,item.id);
+  
+  if(customerId!=null){
+  const data={
+    customerId:customerId,
+    productId:item.id,
+    
+  }
+  ApiManager.fetch(AddtoWhishlistService(customerId),data,onAddToWishlistResponse,onAddToWishlistError) 
+  }
+  }
+  const onAddToWishlistResponse=(response)=>{
+    console.log('hrll')
+    setModalVisible(true)
+  }
+  const onAddToWishlistError=(error)=>{
+    console.log('error')
+    setErrorVisible(true)
+    setErrorMsg(error.message)
+    setLoading(false)
+  
+  }
+  
   const toggleSearch = () => {
     setIsSearching(!isSearching);
   };
@@ -91,12 +98,16 @@ export default function AllProductList(props) {
 
   const Itemlist = ({item}) => {
     return (
-      <TouchableOpacity style={styles.itemcontainer}>
+      <TouchableOpacity
+        onPress={() => {
+          props.navigation.navigate('ProductDetail',{id:item?.id});
+        }}
+        style={styles.itemcontainer}>
         <TouchableOpacity style={styles.itemimageview}>
           <Image source={wheart} style={styles.itemimgheart} />
         </TouchableOpacity>
         <View style={styles.itemview}>
-          <Image source={item.image} style={styles.itemlistproductimage} />
+          <Image source={{uri:item?.imageURL[0]}} style={styles.itemlistproductimage} />
         </View>
 
         <View style={styles.itemsubcontainer}>
@@ -107,7 +118,7 @@ export default function AllProductList(props) {
               <TextRegular fontSize={12} color={'#666666'} text={item.rating} />
             </View>
             <View style={styles.itemtotalcontainer}>
-              <TextRegular fontSize={12} color={'#666666'} text={'8354 Sold'} />
+              <TextRegular fontSize={12} color={'#666666'} text={`${item?.numberOfSold} Sold`} />
             </View>
           </View>
         </View>
@@ -121,7 +132,7 @@ export default function AllProductList(props) {
           <TextRegular
             color={'#9E9E9E'}
             fontSize={12}
-            text={'PKR' + item.disount}
+            text={'PKR' + item.discount}
           />
         </View>
         <View style={styles.itemdiscount}>
@@ -154,12 +165,34 @@ export default function AllProductList(props) {
         )}
       </View>
       <View>
+
+      {productLoading && <ActivityIndicator size={'small'} color={'#FF2A00'}/>}
         <FlatList
-          data={Productlist}
+          data={productList}
           keyExtractor={item => item.id.toString()}
           renderItem={({item}) => <Itemlist item={item} />}
           numColumns={2}
+          onEndReached={()=>{
+            pageNo=pageNo+1,
+            getProduct()}}
           contentContainerStyle={styles.flatListContainer}
+        />
+         <CustomAlert
+        alertheading={'Add to Wishlist'}
+        textmessage={'Item is added to Wishlist'}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+        image={alerticon}
+      />
+      <Alert
+          visible={errorVisible}
+         source={errorgif}
+          Message={errorMsg}
+          Button={() => {
+            setErrorVisible(!errorVisible);
+          }}
         />
       </View>
     </SafeAreaView>

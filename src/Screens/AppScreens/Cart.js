@@ -27,33 +27,48 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import CustomButton from '../../component/CustomButton';
 import TextRegular from '../../component/TextRegular';
 import { BlurView } from '@react-native-community/blur';
-import { GetCartItemService,DeleteCartService } from '../../Api/Cart';
+import { GetCartItemService,DeleteCartService ,UpdateCartService} from '../../Api/Cart';
 import AsyncStorage from '@react-native-community/async-storage';
-
+import CustomAlert from '../../component/CustomAlert';
+import alerticon from '../../Assest/Images/alerticon.png';
+import { useIsFocused } from '@react-navigation/native';
+import Alert from '../../component/Alert';
 export default function Cart(props) {
   const refRBSheet = useRef();
 const [data,setData]=useState([])
 const [loading,setLoading]=useState(true);
   const [itemCounts, setItemCounts] = useState();
+  const [deleteMsg,setDeleteMsg]=useState('');
+  const [deleteModal,setDeleteModal]=useState(false)
 
   const [selectedItem, setSelectedItem] = useState(null);
 const [cId,setCid]=useState('')
+const focus=useIsFocused();
 const [fullData,setFullData]=useState()
-  const incrementCount = (itemId) => {
+useEffect(()=>{
+  getCartItem();
+},[focus])
+  const incrementCount = (item) => {
+   const itemId=item.product.id
+    UpdateCartService(item)
     setItemCounts((prevCounts) => ({
       ...prevCounts,
       [itemId]: prevCounts[itemId] + 1,
     }));
+
   };
   const getItemCount = (itemId) => {
+
     setItemCounts((prevCounts) => ({
       ...prevCounts,
       [itemId]: prevCounts[itemId] + 1,
     }));
   };
 
-  const decrementCount = (itemId) => {
+  const decrementCount = (item) => {
+    const itemId=item.product.id
     if (itemCounts[itemId] > 0) {
+      UpdateCartService(item)
       setItemCounts((prevCounts) => ({
         ...prevCounts,
         [itemId]: prevCounts[itemId] - 1,
@@ -65,9 +80,7 @@ const [fullData,setFullData]=useState()
     setSelectedItem(item);
     refRBSheet.current.open();
   };
-useEffect(()=>{
-  getCartItem();
-},[])
+
   /*const data = [
     {
       id: 1,
@@ -132,13 +145,25 @@ useEffect(()=>{
 const deleteCart=(item)=>{
   if(item){
     
-    const data={id:item?.id,
+    const data={id:0,
   customerId:cId,
   productId:item?.product.id,
   quantity:itemCounts[item?.product.id]
 
   }
   ApiManager.fetch(DeleteCartService(cId),data,onDeleteResponse,onDeleteError)
+}
+}
+const updateCart=(item)=>{
+  if(item){
+    
+    const data={id:0,
+  customerId:cId,
+  productId:item?.product.id,
+  quantity:itemCounts[item?.product.id]
+
+  }
+  ApiManager.fetch(UpdateCartService(cId),data,onUpdateResponse, onUpdateError)
 }
 }
   const renderItem = ({ item }) => {
@@ -176,7 +201,7 @@ const deleteCart=(item)=>{
             </TouchableOpacity>
             <Text style={styles.count}>{itemCount}</Text>
             <TouchableOpacity
-              onPress={() => incrementCount(item.product?.id)}
+              onPress={() => incrementCount(item)}
               style={styles.innerspacecounter}>
               <Image source={add} style={styles.imgcounter} />
             </TouchableOpacity>
@@ -192,13 +217,25 @@ const deleteCart=(item)=>{
     );
   };
   const onDeleteResponse=(response)=>{
-    setLoading(false)
+
+  setDeleteMsg(response.data.message)
+  refRBSheet.current.close()
+ setDeleteModal(true)
+ 
   
   }
   const onDeleteError=(error)=>{
     setLoading(false)
   
   }
+  const onUpdateResponse=(response)=>{
+
+
+    }
+    const onUpdateError=(error)=>{
+      setLoading(false)
+    
+    }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -303,7 +340,7 @@ const deleteCart=(item)=>{
                      {itemCounts[selectedItem.product.id]}
                    </Text>
                    <TouchableOpacity
-                     onPress={() => incrementCount(selectedItem.product.id)}
+                     onPress={() => incrementCount(selectedItem)}
                      style={styles.innerspacecounter}>
                      <Image source={add} style={styles.imgcounter} />
                    </TouchableOpacity>
@@ -321,7 +358,7 @@ const deleteCart=(item)=>{
               <TextMedium fontSize={14} color={'#666666'} text={'CANCEL'} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.colorbtn}
-            onPress={deleteCart(selectedItem)}
+            onPress={()=>deleteCart(selectedItem)}
             >
               <TextMedium
                 fontSize={14}
@@ -332,7 +369,19 @@ const deleteCart=(item)=>{
           </View>
         </View>
       </RBSheet>
+      <Alert
+           visible={deleteModal}
+         source={alerticon}
+          Message={deleteMsg}
+          Button={() => {
+            getCartItem();
+            setDeleteModal(!deleteModal);
 
+          
+            
+          }}
+        />
+     
       </>
 }
     </SafeAreaView>
