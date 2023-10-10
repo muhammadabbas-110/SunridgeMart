@@ -18,7 +18,7 @@ import heart from '../../Assest/Images/heart.png';
 import TextBold from '../../component/TextBold';
 import Alert from '../../component/Alert';
 import ApiManager from '../../Api/ApiManager';
-import { AllProductService } from '../../Api/Home';
+import { AllProductService,AllCategoriesService,GetProductByCategoryService } from '../../Api/Home';
 import searchicon from '../../Assest/Images/magnifying-glass.png';
 import CustomTextinput from '../../component/CustomTextinput';
 import TextMedium from '../../component/TextMedium';
@@ -32,16 +32,26 @@ import salt from '../../Assest/Images/salt-removebg-preview.png';
 import cookingoil from '../../Assest/Images/oil-Cookioil-box-removebg-preview.png';
 import wheart from '../../Assest/Images/whiteheart.png';
 import star from '../../Assest/Images/star-social-favorite-middle-full.png';
+import Other from '../../Assest/Images/other.png';
+import { ActivityIndicator } from 'react-native-paper';
 const deviceWidth = Dimensions.get('window').width;
 //import {Carousel,Pagination }from 'react-native-reanimated-carousel';
-
+let pageNo=1;
 export default function HomeScreen(props) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [category,setCategory]=useState([])
   const [loading,setLoading]=useState();
+  const [productList,setProductList]=useState([]);
+  const [productLoading,setProductLoading]=useState(false)
+  const [hasMoreData,setMoreData]=useState(0)
+  const pageSize=20;
+  const [filterBrandArray,setFilterBrandArray]=useState([{key:"",value:""}])
+  const [filterCategoryArray,setFilterCategoryArray]=useState([{key:"",value:""}])
   const ref = useRef();
   useEffect(()=>{
+getCategories();
 getProduct();
-  },[])
+  },[pageNo])
   const data = [
     {
       id: 1,
@@ -58,7 +68,7 @@ getProduct();
     
   ];
 
-  const Category = [
+  /*const Category = [
     {
       id: 1,
       image: require('../../Assest/Images/supplies.png'),
@@ -99,9 +109,9 @@ getProduct();
       image: require('../../Assest/Images/ellipsis.png'),
       name: 'Others',
     },
-  ];
+  ];*/
   
-  const Productlist = [
+ /* const Productlist = [
     {
       id: 1,
       image: chakkiaata,
@@ -151,40 +161,98 @@ getProduct();
       price: 2000,
       disount: 2500,
     },
-  ];
+  ];*/
   const onSnapToItem = (index) => {
     setCurrentIndex(index); // Update currentIndex state immediately
   };
-  const ProductsInRow = ({item}) => {
+  const ProductsInRow = ({item,index}) => {
     return (
+<>
+     
       <View style={styles.productContainer}>
-        <TouchableOpacity style={styles.porductrowcontainer}>
+        <TouchableOpacity style={styles.porductrowcontainer}
+        onPress={()=>getProductByCategories(item.id)}>
           <Image
-            source={item.image}
+          width={30}
+          height={30}
+            source={{uri:item.imageURL}}
             style={styles.productImage}
             resizeMode="contain"
           />
         </TouchableOpacity>
         <TextMedium fontSize={14} color={'#333333'} text={item.name} />
+       
       </View>
+      { category?.length >7 &&
+          index==category?.length-1 &&
+          <View style={styles.productContainer}>
+          <TouchableOpacity style={styles.porductrowcontainer}
+          onPress={()=>getProductByCategories(item.id)}>
+         <Image
+          width={30}
+          height={30}
+            source={Other}
+            style={styles.productImage}
+            resizeMode="contain"
+          />
+          </TouchableOpacity>
+          <TextMedium fontSize={14} color={'#333333'} text={'Other'} />
+          </View>
+         
+        }
+      </>
     );
   };
 const getProduct=()=>{
-  setLoading(true);
-  ApiManager.fetch(AllProductService,{},onProductResponse,onProductError)
+  setProductLoading(true)
+  ApiManager.fetch(AllProductService,{filterBrandArray,filterCategoryArray,pageNo,pageSize},onProductResponse,onProductError)
   
 }
 const onProductResponse=(response)=>{
-  console.log('response',response?.data)
-
+  console.log('response getProductDAta',response?.data?.data?.products);
+  setProductList(response?.data?.data?.products);
+  setProductLoading(false)
 }
 const onProductError=(error)=>{
   console.log('error',error?.data)
+  setProductLoading(false)
+
+}
+const getCategories=()=>{
+  setLoading(true);
+  ApiManager.fetch(AllCategoriesService,{},onCategoriesResponse,onCategoriesError)
+  
+}
+const onCategoriesResponse=(response)=>{
+  
+  setCategory(response?.data?.data);
+
+}
+const onCategoriesError=(error)=>{
+  console.log('error',error?.data)
+
+}
+const getProductByCategories=(id)=>{
+  setProductLoading(true);
+  ApiManager.fetch(GetProductByCategoryService(id),{},onProductByCategoriesResponse,onProductByCategoriesError)
+  
+}
+const onProductByCategoriesResponse=(response)=>{
+ 
+  setProductList(response?.data?.data.products);
+  setProductLoading(false);
+
+
+}
+const onProductByCategoriesError=(error)=>{
+  console.log('error',error?.data)
+  setProductLoading(false);
 
 }
   const MostPopular = ({item}) => {
     return (
-      <TouchableOpacity style={styles.popularcontainer}>
+      <TouchableOpacity style={styles.popularcontainer} 
+      onPress={()=>getProductByCategories(item?.id)}>
         <TextMedium fontSize={14} color={'#707070'} text={item.name} />
       </TouchableOpacity>
     );
@@ -193,14 +261,14 @@ const onProductError=(error)=>{
     return (
       <TouchableOpacity
         onPress={() => {
-          props.navigation.navigate('ProductDetail');
+          props.navigation.navigate('ProductDetail',{id:item?.id});
         }}
         style={styles.itemcontainer}>
         <TouchableOpacity style={styles.itemimageview}>
           <Image source={wheart} style={styles.itemimgheart} />
         </TouchableOpacity>
         <View style={styles.itemview}>
-          <Image source={item.image} style={styles.itemlistproductimage} />
+          <Image source={{uri:item?.imageURL[0]}} style={styles.itemlistproductimage} />
         </View>
 
         <View style={styles.itemsubcontainer}>
@@ -211,7 +279,7 @@ const onProductError=(error)=>{
               <TextRegular fontSize={12} color={'#666666'} text={item.rating} />
             </View>
             <View style={styles.itemtotalcontainer}>
-              <TextRegular fontSize={12} color={'#666666'} text={'8354 Sold'} />
+              <TextRegular fontSize={12} color={'#666666'} text={`${item?.numberOfSold} Sold`} />
             </View>
           </View>
         </View>
@@ -225,7 +293,7 @@ const onProductError=(error)=>{
           <TextRegular
             color={'#9E9E9E'}
             fontSize={12}
-            text={'PKR' + item.disount}
+            text={'PKR' + item.discount}
           />
         </View>
         <View style={styles.itemdiscount}>
@@ -312,9 +380,9 @@ const onProductError=(error)=>{
       return (
         <View>
           <FlatList
-            data={Category}
+            data={category}
             keyExtractor={item => item.id.toString()}
-            renderItem={({item}) => <ProductsInRow item={item} />}
+            renderItem={({item,index}) => <ProductsInRow item={item}  index={index}/>}
             numColumns={4}
             contentContainerStyle={styles.flatListContainer}
           />
@@ -335,7 +403,7 @@ const onProductError=(error)=>{
           </View>
           <View>
             <FlatList
-              data={Category}
+              data={category}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
               keyExtractor={item => item.id.toString()}
@@ -349,13 +417,22 @@ const onProductError=(error)=>{
       // Render the second FlatList
       return (
         <View>
-          <FlatList
-            data={Productlist}
+          {
+            productLoading?
+            <ActivityIndicator size={'small'} color={'#FF2A00'}/>
+          :<FlatList
+            data={productList}
             keyExtractor={item => item.id.toString()}
             renderItem={({item}) => <Itemlist item={item} />}
             numColumns={2}
+            onEndReached={()=>{
+              pageNo=pageNo+1,
+              getProduct()}}
+            onEndReachedThreshold={0.1}
+        
             contentContainerStyle={styles.flatListContainer}
           />
+            }
         </View>
       );
     }
@@ -417,9 +494,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   productContainer: {
+   
     flex: 1,
-    alignItems: 'center',
+    //alignItems: 'center',
+    
     marginBottom: 10,
+    marginHorizontal:10,
     width: deviceWidth / 2.8 - 20, // Adjust the width to fit 2 products in a row
   },
   rowheading: {
@@ -434,9 +514,14 @@ const styles = StyleSheet.create({
   },
   porductrowcontainer: {
     backgroundColor: '#FF2A00',
+    backgroundColor:'red',
+    justifyContent:'space-around',
     padding: 15,
     alignItems: 'center',
-    borderRadius: 50,
+    justifyContent:'center',
+    borderRadius: 35,
+    width:70,
+    height:70
   },
   popularcontainer: {
     borderWidth: 1,

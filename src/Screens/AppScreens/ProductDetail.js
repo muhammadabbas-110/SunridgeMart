@@ -5,29 +5,40 @@ import {
   View,
   Text,
   ActivityIndicator,
-  Alert,
   TouchableOpacity,
   StyleSheet,
   TextInput,
   Platform,
-  SafeAreaView,
+  SafeAreaView, 
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { vh, vw } from '../../constant';
 import back from '../../Assest/Images/back.png';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
+import AsyncStorage from '@react-native-community/async-storage';
 import TextRegular from '../../component/TextRegular';
 import TextBold from '../../component/TextBold';
 import { height, width } from 'react-native-dimension';
+import CustomAlert from '../../component/CustomAlert';
 import star from '../../Assest/Images/star-social-favorite-middle-full.png';
 import add from '../../Assest/Images/add.png';
+import alerticon from '../../Assest/Images/alerticon.png';
 import sub from '../../Assest/Images/sub.png';
+import Alert from '../../component/Alert';
 import cart from '../../Assest/Images/bag.png';
-
+import ApiManager from '../../Api/ApiManager';
+import errorgif from '../../Assest/Images/errorgif.json';
+import { ProductDetailsService } from '../../Api/ProductDetails';
+import { AddtoCartService } from '../../Api/Cart';
 export default function ProductDetail(props) {
   const [activeBandIndex, setActiveBandIndex] = useState(0);
   const [count, setCount] = useState(0);
-
+  const [loading,setLoading]=useState(true);
+  const [productData,setProductData]=useState()
+  const [modalVisible, setModalVisible] = useState(false);
+  const [errorVisible,setErrorVisible]=useState(false);
+  const [errorMsg,setErrorMsg]=useState('');
+const productId=props.route?.params?.id
   const incrementCount = () => {
     setCount(count + 1);
   };
@@ -51,6 +62,50 @@ export default function ProductDetail(props) {
       iamges: require('../../Assest/Images/detailslider.png'),
     },
   ];
+  useEffect(()=>{
+    getProductDetail(productId);
+  },[])
+  const getProductDetail=(productId)=>{
+    ApiManager.fetch(ProductDetailsService(productId),{},onProductResponse,onProductError)
+    
+  }
+  const onProductResponse=(response)=>{
+    setProductData(response?.data?.data);
+ 
+    setLoading(false)
+    
+  }
+  const onProductError=(error)=>{
+    console.log('error',error?.data)
+    setLoading(false)
+  
+  }
+  const addToCart=async()=>{
+    setLoading(true)
+    const customerId=await AsyncStorage.getItem('customerID')
+
+  if(customerId!=null && count>0){
+  const data={
+    customerId:customerId,
+    productId:productId,
+    quantity:count
+}
+    ApiManager.fetch(AddtoCartService(customerId),data,onAddToCartResponse,onAddToCartError)
+  }
+  
+  }
+  const onAddToCartResponse=(response)=>{
+    setLoading(false)
+    setModalVisible(true)
+    
+    
+  }
+  const onAddToCartError=(error)=>{
+    setErrorVisible(true)
+    setErrorMsg(error.message)
+    setLoading(false)
+  
+  }
   const renderHeader = () => {
     return (
       <View style={styles.slidercontainer}>
@@ -99,12 +154,13 @@ export default function ProductDetail(props) {
   };
   const renderDetails = propss => {
     return (
+
       <View style={styles.details}>
         <View style={{ marginHorizontal: width(5) }}>
           <TextBold
             color={'#666666'}
             fontSize={18}
-            text={'Premium Basmati Rice 1 Kg'}
+            text={productData.name}
           />
         </View>
         <View
@@ -117,7 +173,7 @@ export default function ProductDetail(props) {
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image source={star} style={styles.star} />
             <View style={styles.itemsubcontainer}>
-              <TextRegular fontSize={12} color={'#666666'} text={'4.8'} />
+              <TextRegular fontSize={12} color={'#666666'} text={productData.rating} />
             </View>
             <TextRegular fontSize={12} color={'#666666'} text={'6,578'} />
             <View style={{ marginHorizontal: 5 }}>
@@ -125,11 +181,11 @@ export default function ProductDetail(props) {
             </View>
 
             <View style={styles.itemtotalcontainer}>
-              <TextRegular fontSize={12} color={'#666666'} text={'8354 Sold'} />
+              <TextRegular fontSize={12} color={'#666666'} text={`${productData?.numberOfSold} Sold`} />
             </View>
           </View>
           <View>
-            <TextBold fontSize={18} color={'#FF2A00'} text={'140.00'} />
+            <TextBold fontSize={18} color={'#FF2A00'} text={`${productData?.price}.00`} />
           </View>
         </View>
         <View style={{ marginHorizontal: width(5) }}>
@@ -139,9 +195,7 @@ export default function ProductDetail(props) {
             color={'#666666'}
             fontSize={14}
             lineheight={20}
-            text={
-              'Sunridge Premium Basmati’s perfectly aged grain is processed by state-of-the-art technology and packed to provide the finest quality, consistently Extra Long Grain rice holding true to the key characteristics of authentic basmati rice. When cooked, it  grows 3 times its size while remaining whole (unbroken), separate, light and fluffy making it ideal for Biryani, Mandi etc.'
-            }
+            text={productData.description}
           />
 
           <View
@@ -180,10 +234,11 @@ export default function ProductDetail(props) {
                 color={'#666666'}
                 text={'Total Price'}
               />
-              <TextBold fontSize={16} color={'#FF2A00'} text={'280.00'} />
+              <TextBold fontSize={16} color={'#FF2A00'} text={productData.price*(count)} />
             </View>
 
             <TouchableOpacity
+            onPress={()=>addToCart()}
               style={styles.buttoncontainer}>
               <Image
                 source={cart}
@@ -192,12 +247,38 @@ export default function ProductDetail(props) {
               <TextBold text={'Add to cart'} color={'#fff'} fontSize={14} />
             </TouchableOpacity>
           </View>
+          <CustomAlert
+        alertheading={'Add To Cart'}
+        textmessage={'Item is added to cart'}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+        image={alerticon}
+      />
+       
+       <Alert
+          visible={errorVisible}
+         source={errorgif}
+          Message={errorMsg}
+          Button={() => {
+            setErrorVisible(!errorVisible);
+          }}
+        />
         </View>
       </View>
     );
   };
   return (
     <SafeAreaView style={styles.container}>
+     
+      {loading?
+       <View style={styles.emptyView}>
+      <ActivityIndicator 
+      size="large"
+      color="#FF2A00"/>
+      </View>
+      :
       <ScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}
@@ -208,6 +289,7 @@ export default function ProductDetail(props) {
         {renderHeader()}
         {renderDetails()}
       </ScrollView>
+}
     </SafeAreaView>
   );
 }
@@ -320,5 +402,10 @@ const styles = StyleSheet.create({
     width: 20,
     resizeMode: 'contain',
     tintColor: '#fff',
+  },
+  emptyView:
+  {flex:1,
+    alignItems:'center',
+    justifyContent:'center'
   }
 });

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef,useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   Image,
   Text,
   FlatList,
+  ActivityIndicator
 } from 'react-native';
 import CustomTextinput from '../../component/CustomTextinput';
 import searchicon from '../../Assest/Images/magnifying-glass.png';
@@ -18,6 +19,7 @@ import TextBold from '../../component/TextBold';
 import deleteicon from '../../Assest/Images/delete.png';
 import add from '../../Assest/Images/add.png';
 import sub from '../../Assest/Images/sub.png';
+import ApiManager from '../../Api/ApiManager';
 import cookingoil from '../../Assest/Images/oil-Cookioil-box-removebg-preview.png';
 import basmati from '../../Assest/Images/premium-basmati-rice-1kg-removebg-preview.png';
 import maida from '../../Assest/Images/maida-1kg-removebg-preview.png';
@@ -25,20 +27,25 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import CustomButton from '../../component/CustomButton';
 import TextRegular from '../../component/TextRegular';
 import { BlurView } from '@react-native-community/blur';
+import { GetCartItemService,DeleteCartService } from '../../Api/Cart';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default function Cart(props) {
   const refRBSheet = useRef();
-
-  const [itemCounts, setItemCounts] = useState({
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-  });
+const [data,setData]=useState([])
+const [loading,setLoading]=useState(true);
+  const [itemCounts, setItemCounts] = useState();
 
   const [selectedItem, setSelectedItem] = useState(null);
-
+const [cId,setCid]=useState('')
+const [fullData,setFullData]=useState()
   const incrementCount = (itemId) => {
+    setItemCounts((prevCounts) => ({
+      ...prevCounts,
+      [itemId]: prevCounts[itemId] + 1,
+    }));
+  };
+  const getItemCount = (itemId) => {
     setItemCounts((prevCounts) => ({
       ...prevCounts,
       [itemId]: prevCounts[itemId] + 1,
@@ -58,8 +65,10 @@ export default function Cart(props) {
     setSelectedItem(item);
     refRBSheet.current.open();
   };
-
-  const data = [
+useEffect(()=>{
+  getCartItem();
+},[])
+  /*const data = [
     {
       id: 1,
       name: 'Sunridge Maida 1 Kg',
@@ -84,48 +93,122 @@ export default function Cart(props) {
       price: 'PKR 2000',
       image: cookingoil,
     },
-  ];
+  ];*/
+  const getCartItem=async()=>{
+    setLoading(true)
+    const customerId=await AsyncStorage.getItem('customerID')
 
+  if(customerId){
+  setCid(customerId)
+    ApiManager.fetch(GetCartItemService(customerId),{},onGetItemResponse,onGetItemError)
+  }
+  
+  }
+  const onGetItemResponse=(response)=>{
+    setLoading(false)
+    console.log('resultttttttt',response.data.data.productWithQuantity);
+    
+  if(response.data.data.productWithQuantity){
+  const newCounts = { ...itemCounts };
+
+  response.data.data.productWithQuantity.forEach((item) => {
+        const itemId = item.product.id;
+        const quantity = item.quantity;
+        
+        // Set the default quantity from the API response
+        newCounts[itemId] = quantity;
+      });
+
+      setItemCounts(newCounts);
+    
+      setData(response.data.data.productWithQuantity)
+     
+    } 
+  }
+  const onGetItemError=(error)=>{
+    setLoading(false)
+  
+  }
+const deleteCart=(item)=>{
+  if(item){
+    
+    const data={id:item?.id,
+  customerId:cId,
+  productId:item?.product.id,
+  quantity:itemCounts[item?.product.id]
+
+  }
+  ApiManager.fetch(DeleteCartService(cId),data,onDeleteResponse,onDeleteError)
+}
+}
   const renderItem = ({ item }) => {
-    const itemCount = itemCounts[item.id];
+  //  console.log('itemmmCounts',itemCounts)
+   const itemCount = itemCounts[item?.product?.id];
     return (
       <View style={styles.cartcontainer}>
         <View style={styles.firstsection}>
           <View style={styles.itemimagecontainer}>
-            <Image source={item.image} style={styles.itemimage} />
+            <Image source={{uri:item.product.imageURL[0]}} style={styles.itemimage} />
           </View>
           <View style={styles.textview}>
-            <TextMedium color={'#333333'} fontSize={15} text={item.name} />
-            <View style={{ height: 7 }} />
-            <TextBold color={'#FF2A00'} fontSize={18} text={item.price} />
-          </View>
-        </View>
-        <View style={styles.secoundsection}>
-          <TouchableOpacity
+            <View style={{flexDirection:'row',justifyContent:'space-between' }}>
+            <View style={{width: width(32)}}>
+            <TextMedium color={'#333333'} fontSize={15} text={item.product.name} />
+            </View>
+            <TouchableOpacity
             onPress={() => openBottomSheet(item)}
             style={styles.deletconatiner}>
             <Image source={deleteicon} style={styles.delicon} />
           </TouchableOpacity>
-          <View style={styles.countercontainer}>
+          </View>
+          <View style={{flexDirection:'row',justifyContent:"space-between"}}>
+            <View style={{ height: 7 }} />
+            <View style={{alignSelf:"flex-start",flex:1}}>
+            <TextBold 
+      
+            color={'#FF2A00'} fontSize={18} text={item.product.price} />
+            </View>
+            <View style={styles.countercontainer}>
             <TouchableOpacity
-              onPress={() => decrementCount(item.id)}
+              onPress={() => decrementCount(item.product?.id)}
               style={styles.innerspacecounter}>
               <Image source={sub} style={styles.imgcounter} />
             </TouchableOpacity>
             <Text style={styles.count}>{itemCount}</Text>
             <TouchableOpacity
-              onPress={() => incrementCount(item.id)}
+              onPress={() => incrementCount(item.product?.id)}
               style={styles.innerspacecounter}>
               <Image source={add} style={styles.imgcounter} />
             </TouchableOpacity>
           </View>
+          </View>
+          </View>
         </View>
-      </View>
+  
+          
+          
+        </View>
+      
     );
   };
+  const onDeleteResponse=(response)=>{
+    setLoading(false)
+  
+  }
+  const onDeleteError=(error)=>{
+    setLoading(false)
+  
+  }
 
   return (
     <SafeAreaView style={styles.container}>
+      {loading?
+       <View style={styles.emptyView}>
+      <ActivityIndicator 
+      size="large"
+      color="#FF2A00"/>
+      </View>:
+      <>
       <View style={styles.searchengine}>
         <BackButton
           onPress={() => props.navigation.goBack()}
@@ -136,7 +219,7 @@ export default function Cart(props) {
       <FlatList
         showsVerticalScrollIndicator={false}
         data={data}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id?.toString()}
         renderItem={renderItem}
       />
       <View style={styles.footarsection}>
@@ -187,41 +270,49 @@ export default function Cart(props) {
                     />
                   </View>
                   <View style={styles.textview}>
+                    <View style={{flexDirection:"row",justifyContent:"space-between"}}>
+                      <View style={{width:width(32)}}>
                     <TextMedium
                       color={'#333333'}
                       fontSize={15}
-                      text={selectedItem.name}
+                      text={selectedItem.product.name}
                     />
-                    <View style={{ height: 7 }} />
-                    <TextBold
-                      color={'#FF2A00'}
-                      fontSize={18}
-                      text={selectedItem.price}
-                    />
-                  </View>
-                </View>
-                <View style={styles.secoundsection}>
-                  <TouchableOpacity
+                    </View>
+                     <TouchableOpacity
                     onPress={() => refRBSheet.current.close()}
                     style={styles.deletconatiner}>
                     <Image source={deleteicon} style={styles.delicon} />
                   </TouchableOpacity>
-                  <View style={styles.countercontainer}>
-                    <TouchableOpacity
-                      onPress={() => decrementCount(selectedItem.id)}
-                      style={styles.innerspacecounter}>
-                      <Image source={sub} style={styles.imgcounter} />
-                    </TouchableOpacity>
-                    <Text style={styles.count}>
-                      {itemCounts[selectedItem.id]}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => incrementCount(selectedItem.id)}
-                      style={styles.innerspacecounter}>
-                      <Image source={add} style={styles.imgcounter} />
-                    </TouchableOpacity>
+                  </View>
+                    <View style={{ height: 7 }} />
+                    <View style={{flexDirection:"row",justifyContent:"space-between"}}>
+                    <TextBold
+                      color={'#FF2A00'}
+                      fontSize={18}
+                      text={selectedItem.product.price}
+                    />
+                      <View style={styles.secoundsection}>
+                 
+                 <View style={styles.countercontainer}>
+                   <TouchableOpacity
+                     onPress={() => decrementCount(selectedItem.product.id)}
+                     style={styles.innerspacecounter}>
+                     <Image source={sub} style={styles.imgcounter} />
+                   </TouchableOpacity>
+                   <Text style={styles.count}>
+                     {itemCounts[selectedItem.product.id]}
+                   </Text>
+                   <TouchableOpacity
+                     onPress={() => incrementCount(selectedItem.product.id)}
+                     style={styles.innerspacecounter}>
+                     <Image source={add} style={styles.imgcounter} />
+                   </TouchableOpacity>
+                 </View>
+               </View>
+               </View>
                   </View>
                 </View>
+              
               </View>
             </>
           )}
@@ -229,7 +320,9 @@ export default function Cart(props) {
             <TouchableOpacity style={styles.transbtn}>
               <TextMedium fontSize={14} color={'#666666'} text={'CANCEL'} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.colorbtn}>
+            <TouchableOpacity style={styles.colorbtn}
+            onPress={deleteCart(selectedItem)}
+            >
               <TextMedium
                 fontSize={14}
                 color={'#ffff'}
@@ -239,9 +332,13 @@ export default function Cart(props) {
           </View>
         </View>
       </RBSheet>
+
+      </>
+}
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -264,13 +361,15 @@ const styles = StyleSheet.create({
     marginTop: width(7),
   },
   countercontainer: {
-    right: width(2),
+    //right: width(2),
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderRadius: 10,
     borderColor: '#666666',
     padding: 6,
+    height:height(5),
+ 
   },
   innerspacecounter: {
     paddingHorizontal: 9,
@@ -299,6 +398,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
   },
+  emptyView:
+  {flex:1,
+    alignItems:'center',
+    justifyContent:'center'
+  },
   itemimagecontainer: {
     backgroundColor: '#F5F5F5',
     borderRadius: 7,
@@ -311,16 +415,18 @@ const styles = StyleSheet.create({
   },
   textview: {
     flexDirection: 'column',
-    width: width(32),
+   // width: width(32),
     margin: 8,
+    flex:1
   },
   secoundsection: {
     alignItems: 'flex-end',
     flexDirection: 'column',
+  
   },
   deletconatiner: {
     marginBottom: width(5),
-    marginRight: width(4),
+    //marginRight: width(2),
   },
   delicon: {
     height: 20,

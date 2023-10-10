@@ -31,6 +31,8 @@ import cameraIcon from '../../Assest/Images/editprofile.png';
 
 export default function editprofile(props) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [catPageNo,setCatPageNo]=useState()
+  const [productPageNo,setproductPageNo]=useState()
   const [fullname, setfullname] = useState('');
   const [NickName, setNickName] = useState('');
   const [phoneno, setphoneno] = useState('');
@@ -66,15 +68,13 @@ export default function editprofile(props) {
        mediaType: "photo",
        cropping: true,
    }).then(response => {
- 
        setImageUri(response.path)
        console.log(response.path)
    }).catch(error => {
        console.log(error.code, error.message);
        if (error.code == ImagePickerErrorCodes.permissionMissing) {
         showSettingsAlertForPermission('photos');
-    }
-      
+    }  
    });
  }
  const useCamera = () => {

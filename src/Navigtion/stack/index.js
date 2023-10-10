@@ -6,38 +6,39 @@ import {AppContext} from '../../context';
 import AppStack from './AppStack';
 import AuthStack from './AuthStack/AuthStack';
 import { useDispatch, useSelector } from 'react-redux';
-import { authUser,setUser,authSelector,logIn,setLogOut} from '../../redux/slices/authReducer';
-
+import { authUser,authSelector,setWithoutLoginUser} from '../../redux/slices/authReducer';
+import { customerRegistrationService } from '../../Api/Authentication';
+import ApiManager from '../../Api/ApiManager';
 
 const RootNavigation = () => {
   const Stack = createStackNavigator();
   const user = useSelector(authUser);
   const isLoggedIn=useSelector(authSelector).isLoggedIn;
   const dispatch=useDispatch();
-
+ // const customerId=useSelector(authSelector).customerId
   const [isLoading, setIsLoading] = useState(true);
+useEffect(()=>{
+  getUserDetail();
+}
+,[])
+ const getUserDetail=async()=>{
+ const customerId=await AsyncStorage.getItem('customerID')
+ console.log(customerId)
+  if(customerId==null){
+  ApiManager.fetch(customerRegistrationService,{},onResponse,onError)}
+  else{
+    setIsLoading(false);
+  }
+ }
+ const onResponse=async(response)=>{
+  await AsyncStorage.setItem('customerID', response.data?.data?.customerId);
+  setIsLoading(false)
+}
+const onError=(error)=>{
+  
+  console.log('error',error?.data)
 
-  const getUserDetails = async () => {
-    try {
-      const userData = await AsyncStorage.getItem('isUser');
-      console.log('setUser',user);
-      if (userData != null) {
-        dispatch(setUser(JSON.parse(userData)))
-        dispatch(logIn(JSON.parse(userData)))
-     
-     
-      }
-    } catch (error) {
-      console.error('Error retrieving user data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getUserDetails();
-
-  }, []);
+}
 
   if (isLoading) {
     return (
@@ -50,15 +51,9 @@ const RootNavigation = () => {
  
 
   const renderStack = () => {
-    if (isLoggedIn) {
       return (
           <AppStack  />
       );
-    } else {
-      return (
-          <AuthStack />
-      );
-      }
     }
 
   return renderStack();

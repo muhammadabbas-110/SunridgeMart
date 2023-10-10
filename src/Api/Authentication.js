@@ -12,3 +12,10 @@ export const SigninService = {
         'Content-Type': 'application/json'
     }
 }
+export const customerRegistrationService={
+    method: 'POST',
+    url: 'Customer/RegisterCustomer',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+}
