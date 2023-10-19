@@ -7,6 +7,7 @@ const ApiManager = {
     fetch(api, parameters, onResponse, onError) {
         console.log('ckkkkkkkk',api, parameters, onResponse, onError)
         // let dispatch = useDispatch();
+        
         console.log("calling api", ApiURL + api.url, parameters)
         axios({
             method: api.method,

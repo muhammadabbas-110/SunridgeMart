@@ -22,9 +22,11 @@ import {AppRegex} from '../../constant';
 import phoneicon from '../../Assest/Images/phone.png';
 import { SignUpService } from '../../Api/Authentication';
 import Alert from '../../component/Alert';
-import axios from 'axios';
+import FastImage from 'react-native-fast-image'
 import ApiManager from '../../Api/ApiManager';
 import errorgif from '../../Assest/Images/errorgif.json';
+import { sendMultipartFormDataRequest } from '../../Api/FormDataRequests';
+import axios from 'axios';
 import CustomDatePicker from '../../component/CustomDatePicker';
 import CustomDropDown from '../../component/CustomDropDown';
 import { ImagePickerErrorCodes } from "../../constant";
@@ -33,6 +35,7 @@ import TextRegular from '../../component/TextRegular';
 import Modal from "react-native-modal";
 import editprofile from '../../Assest/Images/editprofile.png';
 import { showCommonErrorAlert } from '../../common';
+import moment from 'moment';
 import { showSettingsAlertForPermission,showConfirmationAlert} from "../../common";
 
 export default function Signupscreen(props) {
@@ -92,8 +95,12 @@ const [loading,setLoading]=useState(false)
        cropping: true,
    }).then(response => {
  
-       setImageUri(response.path)
-       console.log(response.path)
+      // setImageUri(response.path)
+       setImageUri({
+        type:response.mime,
+        fileName: 'abc',
+        uri: response.path, 
+      })
    }).catch(error => {
        console.log(error.code, error.message);
        if (error.code == ImagePickerErrorCodes.permissionMissing) {
@@ -110,8 +117,12 @@ const [loading,setLoading]=useState(false)
        width: 100,
        height: 100,
        cropping: true,
-   }).then(image => {
-       setImageUri(image.path)
+   }).then(response => {
+    setImageUri({
+      type:response.mime,
+      fileName: 'abc',
+      uri: response.path, 
+    })
    }).catch(error => {
        console.log(error.message);
        if (error.code == ImagePickerErrorCodes.cameraPermission) {
@@ -181,27 +192,37 @@ const Submit=async()=>{
 
   if (validateInputs()) {
     setLoading(true);
-   const body= {
-    username:NickName,
-    email:Email,
-    password:password,
-    firstName:fullname,
-    lastName:lastName,
-    dateOfBirth:date,
-    phoneNumber:phoneno,
-    gender:0,
-  }
-  ApiManager.fetch(SignUpService,body,onApiResponse,onApiError)
+    const sendDate=moment(date).format('YYYY-DD-MM');
+    const formData=new FormData();
+    formData.append("Username",NickName)
+    formData.append("Email",Email)
+    formData.append("Password",password)
+    formData.append("FirstName",fullname)
+    formData.append("LastName",lastName)
+    formData.append("DateOfBirth",date.toISOString())
+    formData.append("PhoneNumber",phoneno)
+    formData.append("Gender","1")
+    formData.append("ImageFile",{
+      uri: imageUri?.uri,
+      name: 'photo.png',
+      filename: 'imageName.png',
+      type: 'image/png'
+  })
+  
+  sendMultipartFormDataRequest("Account/register",formData,onApiResponse,onApiError)
+  //ApiManager.fetch(SignUpService,formData,onApiResponse,onApiError)
  
    //props.navigation.navigate('LoginScreen')
 }
 }
 const onApiResponse = (response) => {
   setLoading(false);
-//functionality yet to be
+  props.navigation.navigate('LoginScreen')
+
 };
 const onApiError = (error) => {
   setLoading(false);
+  console.log('errorrrrrrrrrrrr',error)
   if(error?.response?.data?.message)
   setApiError(error?.response?.data?.message)
 else  setApiError("Something went wrong!try again later")
@@ -259,8 +280,14 @@ setModalVisbileError(true);
           showsVerticalScrollIndicator={false}>
            <TouchableOpacity style={styles.profileimgcontainer} 
       onPress={uploadImage}>
-        <Image source={userr} style={styles.userimgpic} />
-
+        
+        {imageUri?.uri ?
+          <Image source={{uri:imageUri?.uri}} 
+     
+        style={styles.userimgpic} />
+  :  <Image source={userr} 
+     
+  style={styles.userimgpic} />}
         <View style={{alignSelf: 'flex-end'}}>
           <Image source={editprofile} style={styles.editicon} />
         </View>

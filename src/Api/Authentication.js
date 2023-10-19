@@ -2,7 +2,9 @@ export const SignUpService = {
     method: 'POST',
     url: 'Account/register',
     headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'multipart/form-data',
+ 
+        'Accept': 'application/json',
     }
 }
 export const SigninService = {

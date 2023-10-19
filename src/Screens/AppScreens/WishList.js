@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import {
   View,
   FlatList,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
   SafeAreaView,
+  ActivityIndicator
 } from 'react-native';
 import BackButton from '../../component/BackButton';
 import {height, width} from 'react-native-dimension';
@@ -19,104 +20,31 @@ import maida from '../../Assest/Images/maida-1kg-removebg-preview.png';
 import basmati from '../../Assest/Images/premium-basmati-rice-1kg-removebg-preview.png';
 import sugar from '../../Assest/Images/sugar-removebg-preview.png';
 import salt from '../../Assest/Images/salt-removebg-preview.png';
+import alerticon from '../../Assest/Images/alerticon.png';
 import cookingoil from '../../Assest/Images/oil-Cookioil-box-removebg-preview.png';
 import wheart from '../../Assest/Images/whiteheart.png';
 import star from '../../Assest/Images/star-social-favorite-middle-full.png';
-
+import { AllCategoriesService } from '../../Api/Home';
+import ApiManager from '../../Api/ApiManager';
+import { GetWhishlistService,DeleteWishListService } from '../../Api/Wishlist';
+import AsyncStorage from '@react-native-community/async-storage';
+import Alert from '../../component/Alert';
 const deviceWidth = Dimensions.get('window').width;
 
 export default function WishList(props) {
   const [isSearching, setIsSearching] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const Category = [
-    {
-      id: 0,
-      name: 'All',
-    },
-    {
-      id: 1,
-      name: 'Donate Box',
-    },
-    {
-      id: 2,
-      name: 'Rice',
-    },
-    {
-      id: 3,
-      name: 'Value Bundle',
-    },
-    {
-      id: 4,
-      name: 'Besan',
-    },
-    {
-      id: 5,
-      name: 'Suji',
-    },
-    {
-      id: 6,
-      name: 'Maida',
-    },
-    {
-      id: 7,
-      name: 'Sugar',
-    },
-    {
-      id: 8,
-      name: 'Others',
-    },
-  ];
-  const Productlist = [
-    {
-      id: 1,
-      image: chakkiaata,
-      name: 'Sunridge Fortified Chakki Atta 5 Kg',
-      rating: 4.5,
-      price: 792,
-      disount: 990,
-    },
-    {
-      id: 2,
-      image: maida,
-      name: 'Sunridge Maida 1 Kg',
-      rating: 4.5,
-      price: 168,
-      disount: 210,
-    },
-    {
-      id: 3,
-      image: basmati,
-      name: 'Premium Basmati Rice 1 Kg',
-      rating: 4.5,
-      price: 432,
-      disount: 540,
-    },
-
-    {
-      id: 4,
-      image: sugar,
-      name: 'Sunridge White Crystal Sugar 1 Kg',
-      rating: 4.5,
-      price: 84,
-      disount: 105,
-    },
-    {
-      id: 5,
-      image: salt,
-      name: 'Sunridge Iodized Salt 800 GM',
-      rating: 4.5,
-      price: 32,
-      disount: 40,
-    },
-    {
-      id: 6,
-      image: cookingoil,
-      name: 'Dastak Cooking Oil Pouch Carton 1 X 5 Lt',
-      rating: 4.5,
-      price: 2000,
-      disount: 2500,
-    },
-  ];
+  const [loading,setLoading]=useState(false)
+  const [categories,setCategory]=useState();
+  const [deleteMsg,setDeleteMsg]=useState('');
+  const [deleteModal,setDeleteModal]=useState(false)
+  const [productList,setProductList]=useState();
+  const [cId,setCid]=useState('');
+  useEffect(()=>{
+    getCategories();
+    getWishList();
+  },[])
+  
   const toggleSearch = () => {
     setIsSearching(!isSearching);
   };
@@ -133,14 +61,71 @@ export default function WishList(props) {
       </TouchableOpacity>
     );
   };
+  const getCategories=()=>{
+    setLoading(true);
+    ApiManager.fetch(AllCategoriesService,{},onCategoriesResponse,onCategoriesError)
+    
+  }
+  const onCategoriesResponse=(response)=>{
+    setCategory(response?.data?.data);
+    setLoading(false)
+  
+  }
+  const onCategoriesError=(error)=>{
+    console.log('error',error?.data)
+    setLoading(false)
+  }
+  const getWishList=async()=>{
+    const customerId=await AsyncStorage.getItem('customerID')
+    if(customerId!=null){
+      setLoading(true);
+      setCid(customerId);
+      ApiManager.fetch(GetWhishlistService(customerId),{},onWishListResponse,onWishListError)
+    } 
+  }
+  const onWishListResponse=(response)=>{  
+  setProductList(response?.data?.data.product);
+  setLoading(false)
+  }
+  const onWishListError=(error)=>{
+    setLoading(false)
+  console.log('error',error?.data)
+  
+  }
+  const deleteWislistItem=(item)=>{
+    if(item){
+      
+      const data={id:0,
+    customerId:cId,
+    productId:item?.id,
+    }
+    ApiManager.fetch(DeleteWishListService(cId),data,onDeleteResponse,onDeleteError)
+  }
+  }
+  const onDeleteResponse=(response)=>{
+
+    setDeleteMsg(response.data.message)
+   setDeleteModal(true)
+   
+    
+    }
+    const onDeleteError=(error)=>{
+      setLoading(false)
+    
+    }
   const Itemlist = ({item}) => {
     return (
-      <TouchableOpacity style={styles.itemcontainer}>
-        <TouchableOpacity style={styles.itemimageview}>
+      <TouchableOpacity
+        onPress={() => {
+          props.navigation.navigate('ProductDetail',{id:item?.id});
+        }}
+        style={styles.itemcontainer}>
+        <TouchableOpacity style={styles.itemimageview} 
+        onPress={()=>deleteWislistItem(item)}>
           <Image source={wheart} style={styles.itemimgheart} />
         </TouchableOpacity>
         <View style={styles.itemview}>
-          <Image source={item.image} style={styles.itemlistproductimage} />
+          <Image source={{uri:item?.imageURL[0]}} style={styles.itemlistproductimage} />
         </View>
 
         <View style={styles.itemsubcontainer}>
@@ -151,7 +136,7 @@ export default function WishList(props) {
               <TextRegular fontSize={12} color={'#666666'} text={item.rating} />
             </View>
             <View style={styles.itemtotalcontainer}>
-              <TextRegular fontSize={12} color={'#666666'} text={'8354 Sold'} />
+              <TextRegular fontSize={12} color={'#666666'} text={`${item?.numberOfSold} Sold`} />
             </View>
           </View>
         </View>
@@ -165,7 +150,7 @@ export default function WishList(props) {
           <TextRegular
             color={'#9E9E9E'}
             fontSize={12}
-            text={'PKR' + item.disount}
+            text={'PKR' + item.discount}
           />
         </View>
         <View style={styles.itemdiscount}>
@@ -174,6 +159,7 @@ export default function WishList(props) {
       </TouchableOpacity>
     );
   };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -197,9 +183,16 @@ export default function WishList(props) {
           </TouchableOpacity> 
         )}
       </View>
-      <View>
+      {
+        loading ?
+        <View style={styles.emptyView}>
+        <ActivityIndicator 
+        size="large"
+        color="#FF2A00"/>
+        </View>:<>
+        <View>
         <FlatList
-          data={Category}
+          data={categories}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           keyExtractor={item => item.id.toString()}
@@ -209,13 +202,26 @@ export default function WishList(props) {
       </View>
       <View style={{flex: 1}}>
         <FlatList
-          data={Productlist}
+          data={productList}
           keyExtractor={item => item.id.toString()}
           renderItem={({item}) => <Itemlist item={item} />}
           numColumns={2}
           contentContainerStyle={styles.flatListContainer}
         />
-      </View>
+      </View></>
+      }
+      <Alert
+           visible={deleteModal}
+         source={alerticon}
+          Message={deleteMsg}
+          Button={() => {
+            getWishList();
+            setDeleteModal(!deleteModal);
+
+          
+            
+          }}
+        />
     </SafeAreaView>
   );
 }
@@ -266,6 +272,12 @@ const styles = StyleSheet.create({
     elevation: 10,
     borderRadius: 10,
     backgroundColor: '#fff',
+  
+  },
+  emptyView:
+  {flex:1,
+    alignItems:'center',
+    justifyContent:'center'
   },
   itemimageview: {
     alignSelf: 'flex-end',
@@ -284,6 +296,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     height: height(20),
     width: width(50),
+    alignSelf:'center',
   },
   itemview: {
     bottom: 5,

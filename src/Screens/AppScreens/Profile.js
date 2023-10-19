@@ -51,7 +51,8 @@ const [imageUri, setImageUri] = useState();
     {id: 2, text: 'Address', icon: address},
     {id: 3, text: 'Privacy Policy', icon: shield},
     {id: 4, text: 'Help Center', icon: helpdesk},
-    {id: 5, text: 'Logout', icon: logout},
+    {id: 5, text: 'WishList', icon:helpdesk },
+    {id: 6, text: 'Logout', icon: logout},
   ];
 
   const handleItemPress = index => {
@@ -68,9 +69,12 @@ const [imageUri, setImageUri] = useState();
       case 3:
         props.navigation.navigate('HelpCenter');
         break;
-      case 4:
-        showBottomSheet();
-        break;
+        case 4:
+          props.navigation.navigate('WishList');
+          break;
+          case 5:
+            showBottomSheet();
+            break;
       default:
         break;
     }

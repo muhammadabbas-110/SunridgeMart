@@ -41,6 +41,7 @@ export default function AllProductList(props) {
   const [productLoading,setProductLoading]=useState(false);
   const [errorMsg,setErrorMsg]=useState('');
   const [errorVisible,setErrorVisible]=useState(false);
+  const [modalVisible,setModalVisible]=useState(false);
   const pageSize=20;
   const [filterBrandArray,setFilterBrandArray]=useState([{key:"",value:""}])
   const [filterCategoryArray,setFilterCategoryArray]=useState([{key:"",value:""}])

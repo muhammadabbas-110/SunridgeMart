@@ -32,12 +32,15 @@ import AsyncStorage from '@react-native-community/async-storage';
 import CustomAlert from '../../component/CustomAlert';
 import alerticon from '../../Assest/Images/alerticon.png';
 import { useIsFocused } from '@react-navigation/native';
+import { authUser} from '../../redux/slices/authReducer';
+import { useDispatch, useSelector } from 'react-redux';
 import Alert from '../../component/Alert';
 export default function Cart(props) {
   const refRBSheet = useRef();
 const [data,setData]=useState([])
 const [loading,setLoading]=useState(true);
   const [itemCounts, setItemCounts] = useState();
+  const user = useSelector(authUser);
   const [deleteMsg,setDeleteMsg]=useState('');
   const [deleteModal,setDeleteModal]=useState(false)
 
@@ -267,6 +270,10 @@ const updateCart=(item)=>{
 
         <CustomButton
           onPress={() => {
+            if(user==null){
+              props.navigation.navigate('LoginScreen');
+            }
+           else 
             props.navigation.navigate('CheckOut');
           }}
           text={'CHECKOUT'}

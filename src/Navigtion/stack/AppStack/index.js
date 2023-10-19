@@ -17,6 +17,12 @@ import Notification from '../../../Screens/AppScreens/Notification';
 import WishList from '../../../Screens/AppScreens/WishList';
 import AllProductList from '../../../Screens/AppScreens/AllProductList';
 import TrackOrder from '../../../Screens/AppScreens/TrackOrder';
+import SignupSocial from '../../../Screens/AuthScreens/SignupSocial';
+import LoginScreen from '../../../Screens/AuthScreens/LoginScreen';
+import Signupscreen from '../../../Screens/AuthScreens/Signupscreen';
+import ForgotPasswordSelector from '../../../Screens/AuthScreens/ForgotPasswordSelector';
+import OtpScreen from '../../../Screens/AuthScreens/OtpScreen';
+import NewPasswordScreen from '../../../Screens/AuthScreens/NewPasswordScreen';
 
 const Stack = createStackNavigator();
 
@@ -34,6 +40,54 @@ export default function AppStack() {
       <Stack.Screen
         name="ProductDetail"
         component={ProductDetail}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+       <Stack.Screen
+        name="SignupSocial"
+        component={SignupSocial}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="LoginScreen"
+        component={LoginScreen}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="Signupscreen"
+        component={Signupscreen}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="ForgotPasswordSelector"
+        component={ForgotPasswordSelector}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="OtpScreen"
+        component={OtpScreen}
+        options={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="NewPasswordScreen"
+        component={NewPasswordScreen}
         options={{
           headerShown: false,
           ...TransitionPresets.SlideFromRightIOS,
